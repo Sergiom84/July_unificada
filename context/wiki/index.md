@@ -52,6 +52,7 @@ Esta wiki guarda memoria procedimental para Sergio. El objetivo es convertir fue
 ## Analisis
 
 - [[Encaje Mente_unificada y July]]
+- [[Piloto de arranque MHK Studio]]
 
 ## Documentos curados relacionados
 
