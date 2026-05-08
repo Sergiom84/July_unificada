@@ -27,3 +27,4 @@ tags:
 - Creado `docs/notion/prompt-arranque-proyecto.md` como prompt inicial para webs, apps y software.
 - Ejecutado piloto read-only sobre MHK Studio y guardado en [[Piloto de arranque MHK Studio]].
 - Corregido el prompt de arranque para usar tildes y registrada la decisión [[Español correcto con tildes]].
+- Añadido `CLAUDE.md` como archivo puente para que Claude lea y aplique las reglas de `AGENTS.md`.
