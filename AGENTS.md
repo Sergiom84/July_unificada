@@ -1,0 +1,119 @@
+# Project Instructions
+
+## Purpose
+
+This repository is a procedural knowledge base for Sergio.
+
+It is not primarily a programming project. Its main content is reusable procedures, decisions, checklists, project patterns, and working methods.
+
+Codex should help maintain this repository as a persistent wiki so Sergio does not have to repeat context across sessions.
+
+## Directory Structure
+
+- `context/raw/`: original source material. Treat as immutable.
+- `context/raw/assets/`: images, exports, attachments, PDFs, screenshots, and related files.
+- `context/wiki/index.md`: main map of the generated wiki.
+- `context/wiki/log.md`: chronological log of ingests, queries, decisions, and maintenance.
+- `context/wiki/sources/`: one page per source document.
+- `context/wiki/entities/`: people, companies, products, tools, apps, clients, projects.
+- `context/wiki/concepts/`: reusable ideas, patterns, procedures, methods, and risks.
+- `context/wiki/decisions/`: decisions Sergio wants to preserve.
+- `context/wiki/analyses/`: synthesized investigations, comparisons, and reports.
+- `docs/notion/`: curated procedure documents intended for Notion or stable reference.
+
+## Core Rules
+
+1. Treat `context/raw/` as read-only unless Sergio explicitly asks to edit it.
+2. Treat `context/wiki/` as Codex-maintained.
+3. Before answering procedural or project-memory questions, inspect `context/wiki/index.md` and relevant pages.
+4. When ingesting a new source, create or update all relevant wiki pages.
+5. Use Obsidian-style wikilinks: `[[Page Name]]`.
+6. Flag contradictions clearly instead of silently choosing one claim.
+7. Cite source files whenever possible.
+8. Update `context/wiki/index.md` after every meaningful wiki change.
+9. Append an entry to `context/wiki/log.md` after every ingest, query, lint pass, or major update.
+10. Prefer small, precise edits over rewriting large pages unnecessarily.
+
+## Page Conventions
+
+Every generated wiki page should start with YAML frontmatter:
+
+```yaml
+---
+type: source | entity | concept | decision | analysis | index | log
+status: draft | active | needs-review | superseded
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+sources:
+  - context/raw/source-file.ext
+tags:
+  - example
+---
+```
+
+Use lowercase kebab-case filenames:
+
+- `context/wiki/concepts/wiki-persistente-para-codex.md`
+- `context/wiki/decisions/usar-wiki-local-en-este-proyecto.md`
+
+Use clear Spanish page titles as the first heading.
+
+## Ingest Workflow
+
+When Sergio asks to ingest a source:
+
+1. Read the source from `context/raw/` or the explicit path provided.
+2. Create or update a source page in `context/wiki/sources/`.
+3. Extract important entities and update or create pages in `context/wiki/entities/`.
+4. Extract important concepts and update or create pages in `context/wiki/concepts/`.
+5. Identify decisions, recommendations, contradictions, open questions, and reusable insights.
+6. Create or update decision pages in `context/wiki/decisions/` when useful.
+7. Update `context/wiki/index.md`.
+8. Append a dated entry to `context/wiki/log.md`.
+
+## Query Workflow
+
+When Sergio asks a question that may depend on memory:
+
+1. Read `context/wiki/index.md`.
+2. Identify relevant pages.
+3. Read those pages before answering.
+4. If the answer produces reusable knowledge, propose where to save it.
+5. If Sergio asks to save it, update the wiki and log.
+
+## Maintenance Workflow
+
+When Sergio asks to lint or maintain the wiki, check for:
+
+- orphan pages
+- broken wikilinks
+- duplicated concepts
+- stale claims
+- contradictions
+- source pages not reflected in entity, concept, decision, or analysis pages
+- important concepts without their own page
+- pages missing YAML frontmatter
+
+Produce a maintenance report first. Apply fixes only when requested.
+
+## Style
+
+- Write in Spanish unless Sergio asks otherwise.
+- Keep procedure documents concise, practical, and reusable.
+- Prefer checklists for repeatable operations.
+- Prefer tables for comparisons.
+- Do not invent source claims.
+- Mark uncertainty explicitly.
+- Keep raw source material separate from distilled wiki knowledge.
+
+## Working With This Repository
+
+This repository may not have code, tests, or Git history. Do not assume normal software-project commands exist.
+
+When making changes:
+
+1. Inspect the relevant wiki or docs files first.
+2. Edit only the necessary files.
+3. Keep `docs/notion/` for polished procedures.
+4. Keep `context/wiki/` for active memory and evolving knowledge.
+5. Summarize changed files clearly.

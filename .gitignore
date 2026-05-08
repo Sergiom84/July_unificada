@@ -1,0 +1,28 @@
+# Local/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Runtime/cache artifacts
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+node_modules/
+dist/
+build/
+coverage/
+
+# Local databases and temporary exports
+*.db
+*.sqlite
+*.sqlite3
+*.tmp
+*.log
+
