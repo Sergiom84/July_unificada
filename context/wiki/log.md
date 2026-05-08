@@ -26,3 +26,4 @@ tags:
 - Registrada la decision [[Mantener memoria local por defecto]] y el analisis [[Encaje Mente_unificada y July]].
 - Creado `docs/notion/prompt-arranque-proyecto.md` como prompt inicial para webs, apps y software.
 - Ejecutado piloto read-only sobre MHK Studio y guardado en [[Piloto de arranque MHK Studio]].
+- Corregido el prompt de arranque para usar tildes y registrada la decisión [[Español correcto con tildes]].

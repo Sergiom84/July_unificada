@@ -99,6 +99,7 @@ Produce a maintenance report first. Apply fixes only when requested.
 ## Style
 
 - Write in Spanish unless Sergio asks otherwise.
+- Use correct Spanish spelling, including accents, `ñ`, opening question marks, and opening exclamation marks. Do not strip accents for ASCII unless editing code identifiers, commands, paths, or machine-readable values.
 - Keep procedure documents concise, practical, and reusable.
 - Prefer checklists for repeatable operations.
 - Prefer tables for comparisons.

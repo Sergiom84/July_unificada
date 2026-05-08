@@ -45,6 +45,7 @@ Esta wiki guarda memoria procedimental para Sergio. El objetivo es convertir fue
 
 - [[Usar wiki local en este proyecto]]
 - [[Mantener memoria local por defecto]]
+- [[Español correcto con tildes]]
 - [[Centralizar datos de negocio]]
 - [[Validar formularios en deploy]]
 - [[Usar IA solo cuando aporta]]
