@@ -3,6 +3,7 @@
 Thumbs.db
 .vscode/
 .idea/
+.claude/settings.local.json
 
 # Environment and secrets
 .env
@@ -25,4 +26,3 @@ coverage/
 *.sqlite3
 *.tmp
 *.log
-
