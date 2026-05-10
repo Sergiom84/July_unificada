@@ -35,7 +35,7 @@ Use `skills/` as the source of truth for Sergio's custom local skills across mac
 
 Claude Code should load these through `~/.claude/skills` or `%USERPROFILE%\.claude\skills`. Prefer direct copies via `scripts/sync-claude-skills.sh` (macOS/Linux) or `scripts/sync-claude-skills.ps1` (Windows) when Claude Code does not show symlinked skills in autocomplete; some sessions may not index a symlinked `~/.claude/skills` directory reliably.
 
-Codex does not rely on Claude's `~/.claude/skills` autocompletion. When Sergio refers to one of these commands, treat the matching local skill in `skills/` as the procedure to follow:
+Codex does not rely on Claude's `~/.claude/skills` autocompletion. To expose these skills in Codex's own selector, sync them to `~/.codex/skills` or `%USERPROFILE%\.codex\skills` with `scripts/sync-codex-skills.sh` (macOS/Linux) or `scripts/sync-codex-skills.ps1` (Windows). When Sergio refers to one of these commands, treat the matching local skill in `skills/` as the procedure to follow even if the selector has not refreshed yet:
 
 Keep repo-owned July wrappers with the explicit `july-` prefix so their origin is obvious and Claude Code can autocomplete them. Do not rename them to generic commands like `/inicio` or `/comprimir`. Third-party or global skills keep their native names, for example `/caveman-compress`.
 
