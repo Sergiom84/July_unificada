@@ -33,7 +33,7 @@ Keep the two layers conceptually separate:
 
 Use `skills/` as the source of truth for Sergio's custom local skills across machines.
 
-Claude Code should load these through `~/.claude/skills` or `%USERPROFILE%\.claude\skills`, preferably as a symlink to this repository's `skills/` directory.
+Claude Code should load these through `~/.claude/skills` or `%USERPROFILE%\.claude\skills`. Prefer direct copies via `scripts/sync-claude-skills.sh` (macOS/Linux) or `scripts/sync-claude-skills.ps1` (Windows) when Claude Code does not show symlinked skills in autocomplete; some sessions may not index a symlinked `~/.claude/skills` directory reliably.
 
 Codex does not rely on Claude's `~/.claude/skills` autocompletion. When Sergio refers to one of these commands, treat the matching local skill in `skills/` as the procedure to follow:
 

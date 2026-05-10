@@ -66,3 +66,5 @@ tags:
 - Convertidos `/July_inicio`, `/July_comprimir` y `/July_ayuda` de ficheros planos a carpetas de skill con `SKILL.md` para poder instalarlos como skills globales reales.
 - Renombrados los wrappers propios de July a formato estándar `july-*` (`/july-inicio`, `/july-comprimir`, `/july-ayuda`) porque Claude Code no mostraba bien los nombres con mayúscula y guion bajo.
 - Añadidos los aliases `skills/july/` y `skills/july-wizard/` para que el autocompletado de Claude en Mac muestre `/july` y `/july-wizard` junto a los wrappers `july-*`, igual que en Windows.
+- Cambiado `~/.claude/skills` en Mac de symlink de carpeta a directorio real con copias de las cinco skills July, porque Claude Code no las mostraba en el autocompletado aunque el symlink resolviera correctamente desde terminal.
+- Añadidos `scripts/sync-claude-skills.sh` y `scripts/sync-claude-skills.ps1` para sincronizar las skills del repo a la carpeta activa de Claude sin depender de symlinks.
