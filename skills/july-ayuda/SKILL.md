@@ -18,8 +18,11 @@ Responde con este resumen formateado. No busques nada, no llames herramientas: s
 ### Sesión y memoria (July)
 | Comando | Qué hace |
 |---|---|
+| `/july` | Atajo corto: arranca sesión y recupera contexto desde July |
+| `/july <objetivo>` | Igual, pero con objetivo registrado |
 | `/july-inicio` | Arranca sesión, recupera contexto del proyecto desde July |
 | `/july-inicio <objetivo>` | Igual, pero con un objetivo concreto registrado |
+| `/july-wizard` | Onboarding read-only para conectar un proyecto nuevo a July |
 
 ### Ficheros y tokens
 | Comando | Qué hace |

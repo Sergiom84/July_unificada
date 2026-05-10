@@ -41,7 +41,9 @@ Keep repo-owned July wrappers with the explicit `july-` prefix so their origin i
 
 | Command | Source | Purpose |
 |---|---|---|
+| `/july` | `skills/july/SKILL.md` | Short alias to start a July-backed project session and recover context. |
 | `/july-inicio` | `skills/july-inicio/SKILL.md` | Start a July-backed project session and recover recent context. |
+| `/july-wizard` | `skills/july-wizard/SKILL.md` | Run read-only onboarding for a new or partial project in July. |
 | `/july-comprimir` | `skills/july-comprimir/SKILL.md` | Compress a long procedural/context file with Caveman safeguards. |
 | `/july-ayuda` | `skills/july-ayuda/SKILL.md` | Show the quick help sheet for July, Caveman, and common agent commands. |
 

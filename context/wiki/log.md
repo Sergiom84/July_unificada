@@ -65,3 +65,4 @@ tags:
 - Acordado mantener los wrappers propios de July con prefijo explícito `/July_*` para distinguirlos, y conservar los nombres nativos de skills externas como `/caveman-compress`.
 - Convertidos `/July_inicio`, `/July_comprimir` y `/July_ayuda` de ficheros planos a carpetas de skill con `SKILL.md` para poder instalarlos como skills globales reales.
 - Renombrados los wrappers propios de July a formato estándar `july-*` (`/july-inicio`, `/july-comprimir`, `/july-ayuda`) porque Claude Code no mostraba bien los nombres con mayúscula y guion bajo.
+- Añadidos los aliases `skills/july/` y `skills/july-wizard/` para que el autocompletado de Claude en Mac muestre `/july` y `/july-wizard` junto a los wrappers `july-*`, igual que en Windows.
