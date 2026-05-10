@@ -27,7 +27,7 @@ July_unificada/
   scripts/
   skills/
   AGENTS.md
-  roadmad.md
+  roadmap.md
 ```
 
 ## Flujo esperado
