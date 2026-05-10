@@ -29,6 +29,20 @@ Keep the two layers conceptually separate:
 - `scripts/`: root-level helper scripts and wrappers.
 - `skills/`: local skills or skill notes that belong to this unified workspace.
 
+## Shared Local Skills
+
+Use `skills/` as the source of truth for Sergio's custom local skills across machines.
+
+Claude Code should load these through `~/.claude/skills` or `%USERPROFILE%\.claude\skills`, preferably as a symlink to this repository's `skills/` directory.
+
+Codex does not rely on Claude's `~/.claude/skills` autocompletion. When Sergio refers to one of these commands, treat the matching file in `skills/` as the procedure to follow:
+
+| Command | Source | Purpose |
+|---|---|---|
+| `/July_inicio` | `skills/July_inicio.md` | Start a July-backed project session and recover recent context. |
+| `/July_comprimir` | `skills/July_comprimir.md` | Compress a long procedural/context file with Caveman safeguards. |
+| `/July_ayuda` | `skills/July_ayuda.md` | Show the quick help sheet for July, Caveman, and common agent commands. |
+
 ## Core Rules
 
 1. Treat `context/raw/` as read-only unless Sergio explicitly asks to edit it.
