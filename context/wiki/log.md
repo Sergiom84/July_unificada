@@ -62,3 +62,5 @@ tags:
 - Instalados en Mac los skills de Caveman en `.agents/skills`, habilitado el plugin `caveman@caveman` en Claude, configurado el badge de statusline y verificados `codeburn` y `designlang`.
 - Consultados los riesgos de `caveman-compress` y `caveman-review`: el primero fue marcado alto por leer/escribir archivos y usar subprocess/API; el segundo medio por afectar el formato de revisiones.
 - Convertido `~/.claude/skills` en Mac a symlink hacia `skills/` del repositorio y documentados en `AGENTS.md` los comandos compartidos `/July_inicio`, `/July_comprimir` y `/July_ayuda` para que Codex los trate como procedimientos locales.
+- Acordado mantener los wrappers propios de July con prefijo explícito `/July_*` para distinguirlos, y conservar los nombres nativos de skills externas como `/caveman-compress`.
+- Convertidos `/July_inicio`, `/July_comprimir` y `/July_ayuda` de ficheros planos a carpetas de skill con `SKILL.md` para poder instalarlos como skills globales reales.

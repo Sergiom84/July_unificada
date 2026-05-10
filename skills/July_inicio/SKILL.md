@@ -1,3 +1,8 @@
+---
+name: July_inicio
+description: Arranca una sesión de trabajo conectada a July para el proyecto actual. Usar cuando Sergio invoque /July_inicio, /July_inicio <objetivo>, o quiera empezar o retomar un proyecto recuperando contexto reciente desde July.
+---
+
 # Skill: /July_inicio
 
 Arranca una sesión de trabajo conectada a July para el proyecto actual.
@@ -10,23 +15,23 @@ Cuando el usuario escribe `/July_inicio` al comenzar a trabajar en cualquier pro
 
 Ejecuta estos pasos en orden. No muestres JSON crudo al usuario; sintetiza la respuesta de forma conversacional.
 
-### Paso 1 — Detectar el proyecto
+### Paso 1 - Detectar el proyecto
 
 Usa `mcp__july__project_entry` con `repo_path` apuntando al directorio de trabajo actual (`$cwd`). Esto determina si el proyecto es nuevo, parcial o conocido.
 
-### Paso 2 — Abrir sesión
+### Paso 2 - Abrir sesión
 
 Usa `mcp__july__session_start` con:
 - `session_key`: `<project_key>-<YYYY-MM-DD>-<HH:MM>` usando fecha y hora actuales
 - `project_key`: el detectado en el paso anterior
-- `agent_name`: `Claude`
+- `agent_name`: `Claude` en Claude Code o `Codex` en Codex
 - `goal`: el objetivo que el usuario haya indicado al invocar el skill, o vacío si no dijo nada
 
-### Paso 3 — Recuperar contexto reciente
+### Paso 3 - Recuperar contexto reciente
 
 Usa `mcp__july__session_context` con el `project_key` del paso 1, `limit: 3`. Esto trae las últimas sesiones con sus resúmenes, hallazgos y siguientes pasos.
 
-### Paso 4 — Presentar el arranque
+### Paso 4 - Presentar el arranque
 
 Responde de forma conversacional siguiendo este esquema según el estado del proyecto:
 
@@ -39,7 +44,7 @@ Responde de forma conversacional siguiendo este esquema según el estado del pro
 **Si hay pendientes abiertos** (usa `mcp__july__project_pendings` con `project_key`):
 > Menciónalos brevemente al final: "Hay [N] pendientes abiertos: [lista corta]."
 
-### Paso 5 — Esperar instrucción
+### Paso 5 - Esperar instrucción
 
 No hagas nada más hasta que el usuario indique qué quiere trabajar.
 

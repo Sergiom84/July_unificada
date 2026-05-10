@@ -1,3 +1,8 @@
+---
+name: July_comprimir
+description: Wrapper seguro sobre caveman-compress para comprimir ficheros largos de procedimientos o conocimiento con verificación previa. Usar cuando Sergio invoque /July_comprimir <fichero> o quiera comprimir contexto de July sin arriesgar secretos.
+---
+
 # Skill: /July_comprimir
 
 Wrapper seguro sobre caveman-compress. Comprime un fichero de procedimientos o conocimiento usando Claude, con verificación de ruta antes de actuar.
@@ -8,11 +13,11 @@ Cuando el usuario quiere comprimir un fichero largo para reducir tokens, o cuand
 
 ## Lo que debes hacer
 
-### Paso 1 — Identificar el fichero
+### Paso 1 - Identificar el fichero
 
 Si el usuario no indicó un fichero concreto, pregúntale cuál quiere comprimir antes de continuar.
 
-### Paso 2 — Verificar la ruta
+### Paso 2 - Verificar la ruta
 
 **Rechaza y avisa si la ruta coincide con alguno de estos patrones:**
 
@@ -26,7 +31,7 @@ Si el usuario no indicó un fichero concreto, pregúntale cuál quiere comprimir
 
 Si la ruta es segura, continúa. Si no, di exactamente por qué la rechazas y no ejecutes nada.
 
-### Paso 3 — Confirmar
+### Paso 3 - Confirmar
 
 Muestra al usuario:
 - Ruta del fichero
@@ -35,11 +40,11 @@ Muestra al usuario:
 
 Pide confirmación explícita antes de continuar.
 
-### Paso 4 — Ejecutar caveman-compress
+### Paso 4 - Ejecutar caveman-compress
 
 Solo tras confirmación, invoca caveman-compress sobre el fichero indicado.
 
-### Paso 5 — Informar
+### Paso 5 - Informar
 
 Tras la compresión:
 - Confirma que se creó la copia `.original.md`
