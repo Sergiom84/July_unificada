@@ -1,15 +1,15 @@
 ---
-name: July_inicio
-description: Arranca una sesión de trabajo conectada a July para el proyecto actual. Usar cuando Sergio invoque /July_inicio, /July_inicio <objetivo>, o quiera empezar o retomar un proyecto recuperando contexto reciente desde July.
+name: july-inicio
+description: Arranca una sesión de trabajo conectada a July para el proyecto actual. Usar cuando Sergio invoque /july-inicio, /july-inicio <objetivo>, o quiera empezar o retomar un proyecto recuperando contexto reciente desde July.
 ---
 
-# Skill: /July_inicio
+# Skill: /july-inicio
 
 Arranca una sesión de trabajo conectada a July para el proyecto actual.
 
 ## Cuándo se usa
 
-Cuando el usuario escribe `/July_inicio` al comenzar a trabajar en cualquier proyecto.
+Cuando el usuario escribe `/july-inicio` al comenzar a trabajar en cualquier proyecto.
 
 ## Lo que debes hacer
 
@@ -50,7 +50,7 @@ No hagas nada más hasta que el usuario indique qué quiere trabajar.
 
 ## Notas
 
-- Si el usuario escribe `/July_inicio <objetivo>`, usa ese texto como `goal` en `session_start`.
+- Si el usuario escribe `/july-inicio <objetivo>`, usa ese texto como `goal` en `session_start`.
 - Al cerrar la sesión (cuando el usuario termine), usa `mcp__july__session_summary` + `mcp__july__session_end`.
 - Si el proyecto es nuevo y el usuario acepta el onboarding, usa `mcp__july__plug_project`.
 - Habla siempre en español con tildes correctas.

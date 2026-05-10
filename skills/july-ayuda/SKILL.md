@@ -1,9 +1,9 @@
 ---
-name: July_ayuda
-description: Muestra una chuleta rápida de comandos y herramientas disponibles para July, Caveman y skills habituales. Usar cuando Sergio invoque /July_ayuda o pregunte cómo llamar los comandos propios de July.
+name: july-ayuda
+description: Muestra una chuleta rápida de comandos y herramientas disponibles para July, Caveman y skills habituales. Usar cuando Sergio invoque /july-ayuda o pregunte cómo llamar los comandos propios de July.
 ---
 
-# Skill: /July_ayuda
+# Skill: /july-ayuda
 
 Muestra una chuleta rápida de todos los comandos y herramientas disponibles en este entorno.
 
@@ -18,18 +18,18 @@ Responde con este resumen formateado. No busques nada, no llames herramientas: s
 ### Sesión y memoria (July)
 | Comando | Qué hace |
 |---|---|
-| `/July_inicio` | Arranca sesión, recupera contexto del proyecto desde July |
-| `/July_inicio <objetivo>` | Igual, pero con un objetivo concreto registrado |
+| `/july-inicio` | Arranca sesión, recupera contexto del proyecto desde July |
+| `/july-inicio <objetivo>` | Igual, pero con un objetivo concreto registrado |
 
 ### Ficheros y tokens
 | Comando | Qué hace |
 |---|---|
-| `/July_comprimir <fichero>` | Comprime un fichero largo con Caveman (con verificación de seguridad) |
+| `/july-comprimir <fichero>` | Comprime un fichero largo con Caveman (con verificación de seguridad) |
 
 ### Ayuda
 | Comando | Qué hace |
 |---|---|
-| `/July_ayuda` | Esta pantalla |
+| `/july-ayuda` | Esta pantalla |
 
 ---
 
@@ -42,7 +42,7 @@ Responde con este resumen formateado. No busques nada, no llames herramientas: s
 - "añade esto como mejora posible"
 
 **Caveman** - para conversaciones largas:
-- `/July_comprimir` para comprimir un fichero de procedimientos
+- `/july-comprimir` para comprimir un fichero de procedimientos
 - `/caveman-compress` sigue siendo el comando nativo de Caveman
 - Caveman-review se activa automáticamente en revisiones de código
 
@@ -56,8 +56,8 @@ Responde con este resumen formateado. No busques nada, no llames herramientas: s
 ## Reglas de oro
 
 1. Archivos sensibles (`.env`, claves, `context/secure/`) -> nunca a Caveman
-2. Proyecto conocido -> `/July_inicio` al empezar
-3. Conversación larga -> `/July_comprimir` el fichero de contexto más pesado
+2. Proyecto conocido -> `/july-inicio` al empezar
+3. Conversación larga -> `/july-comprimir` el fichero de contexto más pesado
 4. Duda sobre qué hace July -> pregunta directamente, tiene 30+ herramientas MCP
 
 ---

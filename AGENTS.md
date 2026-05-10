@@ -37,13 +37,13 @@ Claude Code should load these through `~/.claude/skills` or `%USERPROFILE%\.clau
 
 Codex does not rely on Claude's `~/.claude/skills` autocompletion. When Sergio refers to one of these commands, treat the matching local skill in `skills/` as the procedure to follow:
 
-Keep repo-owned July wrappers with the explicit `/July_` prefix so their origin is obvious. Do not rename them to generic commands like `/inicio` or `/comprimir`. Third-party or global skills keep their native names, for example `/caveman-compress`.
+Keep repo-owned July wrappers with the explicit `july-` prefix so their origin is obvious and Claude Code can autocomplete them. Do not rename them to generic commands like `/inicio` or `/comprimir`. Third-party or global skills keep their native names, for example `/caveman-compress`.
 
 | Command | Source | Purpose |
 |---|---|---|
-| `/July_inicio` | `skills/July_inicio/SKILL.md` | Start a July-backed project session and recover recent context. |
-| `/July_comprimir` | `skills/July_comprimir/SKILL.md` | Compress a long procedural/context file with Caveman safeguards. |
-| `/July_ayuda` | `skills/July_ayuda/SKILL.md` | Show the quick help sheet for July, Caveman, and common agent commands. |
+| `/july-inicio` | `skills/july-inicio/SKILL.md` | Start a July-backed project session and recover recent context. |
+| `/july-comprimir` | `skills/july-comprimir/SKILL.md` | Compress a long procedural/context file with Caveman safeguards. |
+| `/july-ayuda` | `skills/july-ayuda/SKILL.md` | Show the quick help sheet for July, Caveman, and common agent commands. |
 
 ## Core Rules
 

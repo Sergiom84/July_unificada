@@ -64,3 +64,4 @@ tags:
 - Convertido `~/.claude/skills` en Mac a symlink hacia `skills/` del repositorio y documentados en `AGENTS.md` los comandos compartidos `/July_inicio`, `/July_comprimir` y `/July_ayuda` para que Codex los trate como procedimientos locales.
 - Acordado mantener los wrappers propios de July con prefijo explícito `/July_*` para distinguirlos, y conservar los nombres nativos de skills externas como `/caveman-compress`.
 - Convertidos `/July_inicio`, `/July_comprimir` y `/July_ayuda` de ficheros planos a carpetas de skill con `SKILL.md` para poder instalarlos como skills globales reales.
+- Renombrados los wrappers propios de July a formato estándar `july-*` (`/july-inicio`, `/july-comprimir`, `/july-ayuda`) porque Claude Code no mostraba bien los nombres con mayúscula y guion bajo.

@@ -1,9 +1,9 @@
 ---
-name: July_comprimir
-description: Wrapper seguro sobre caveman-compress para comprimir ficheros largos de procedimientos o conocimiento con verificación previa. Usar cuando Sergio invoque /July_comprimir <fichero> o quiera comprimir contexto de July sin arriesgar secretos.
+name: july-comprimir
+description: Wrapper seguro sobre caveman-compress para comprimir ficheros largos de procedimientos o conocimiento con verificación previa. Usar cuando Sergio invoque /july-comprimir <fichero> o quiera comprimir contexto de July sin arriesgar secretos.
 ---
 
-# Skill: /July_comprimir
+# Skill: /july-comprimir
 
 Wrapper seguro sobre caveman-compress. Comprime un fichero de procedimientos o conocimiento usando Claude, con verificación de ruta antes de actuar.
 
