@@ -60,3 +60,4 @@ tags:
 - Implementados pendientes por proyecto en July usando la tabla existente `tasks`: comandos `pending-add`, `pendings`, `pending-status`, herramientas MCP `project_pending_add`, `project_pendings`, `project_pending_status` y skill global `/pendiente`.
 - Añadidos alias globales `/mejoras` y `/pendientes` para evitar depender de argumentos detrás de `/july` en el autocompletado de skills.
 - Renombrado el roadmap raíz de `roadmad.md` a `roadmap.md` y actualizadas las referencias de estructura.
+- Añadido `docs/notion/instalar-july-en-mac.md` con instalación en macOS, copia de la BD viva, prompt de arranque, comandos útiles y configuración MCP.
