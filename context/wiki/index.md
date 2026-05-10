@@ -2,7 +2,7 @@
 type: index
 status: active
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-05-10
 sources:
   - context/raw/2026-05-08-conversacion-wiki-codex.txt
   - docs/notion/patron-web-cliente.md
@@ -33,6 +33,7 @@ Esta wiki guarda memoria procedimental para Sergio. El objetivo es convertir fue
 - [[Fuente unica de datos de negocio]]
 - [[Formularios con envio real]]
 - [[SEO local para webs de cliente]]
+- [[Bóveda local cifrada para July y Mente_unificada]]
 
 ## Entidades
 
@@ -49,6 +50,10 @@ Esta wiki guarda memoria procedimental para Sergio. El objetivo es convertir fue
 - [[Centralizar datos de negocio]]
 - [[Validar formularios en deploy]]
 - [[Usar IA solo cuando aporta]]
+- [[Usar bóveda local cifrada para memoria sensible]]
+- [[Fusionar July y Mente_unificada en July_unificada]]
+- [[Guardar mejoras posibles en July]]
+- [[Guardar pendientes por proyecto en July]]
 
 ## Analisis
 

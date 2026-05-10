@@ -1,0 +1,9 @@
+﻿[
+    {
+        "key":  "indalo-padel/mcp-tooling",
+        "key_id":  "a7256c8c3b5294fe594748bf07056d95a8c45ced648992db3a9433ec4408260c",
+        "file":  "context/secure/vault/a7256c8c3b5294fe594748bf07056d95a8c45ced648992db3a9433ec4408260c.dpapi.json",
+        "protection":  "windows-dpapi-current-user",
+        "updated_at":  "2026-05-09T21:28:02.7882213Z"
+    }
+]

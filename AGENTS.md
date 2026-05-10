@@ -2,14 +2,20 @@
 
 ## Purpose
 
-This repository is a procedural knowledge base for Sergio.
+This repository is the unified local memory and copilot workspace for Sergio.
 
-It is not primarily a programming project. Its main content is reusable procedures, decisions, checklists, project patterns, and working methods.
+It combines a curated procedural knowledge base with the July local-first memory engine.
 
-Codex should help maintain this repository as a persistent wiki so Sergio does not have to repeat context across sessions.
+Codex should help maintain this repository as a persistent wiki and operational memory workspace so Sergio does not have to repeat context across sessions.
+
+Keep the two layers conceptually separate:
+
+- `context/` and `docs/` are curated knowledge.
+- `apps/july/` is executable software.
 
 ## Directory Structure
 
+- `apps/july/`: July application code, CLI, MCP server, cockpit, tests, and its own project documentation.
 - `context/raw/`: original source material. Treat as immutable.
 - `context/raw/assets/`: images, exports, attachments, PDFs, screenshots, and related files.
 - `context/wiki/index.md`: main map of the generated wiki.
@@ -20,6 +26,8 @@ Codex should help maintain this repository as a persistent wiki so Sergio does n
 - `context/wiki/decisions/`: decisions Sergio wants to preserve.
 - `context/wiki/analyses/`: synthesized investigations, comparisons, and reports.
 - `docs/notion/`: curated procedure documents intended for Notion or stable reference.
+- `scripts/`: root-level helper scripts and wrappers.
+- `skills/`: local skills or skill notes that belong to this unified workspace.
 
 ## Core Rules
 
@@ -33,6 +41,8 @@ Codex should help maintain this repository as a persistent wiki so Sergio does n
 8. Update `context/wiki/index.md` after every meaningful wiki change.
 9. Append an entry to `context/wiki/log.md` after every ingest, query, lint pass, or major update.
 10. Prefer small, precise edits over rewriting large pages unnecessarily.
+11. When working inside `apps/july/`, also follow `apps/july/AGENTS.md`, `apps/july/README.md`, `apps/july/ROADMAP.md`, and `apps/july/PROJECT_PROTOCOL.md` when present.
+12. Do not store July's live database inside this repo. It belongs in `C:\Users\sergi\.july\july.db` unless Sergio explicitly decides otherwise.
 
 ## Page Conventions
 
