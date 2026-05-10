@@ -33,8 +33,8 @@ Keep the two layers conceptually separate:
 
 1. Treat `context/raw/` as read-only unless Sergio explicitly asks to edit it.
 2. Treat `context/wiki/` as Codex-maintained.
-3. Before answering procedural or project-memory questions, inspect `context/wiki/index.md` and relevant pages.
-4. When ingesting a new source, create or update all relevant wiki pages.
+3. Before answering procedural or project-memory questions, check July first (`project_context`, `session_context`), then consult `context/wiki/index.md` if July no tiene respuesta.
+4. When ingesting a new source, create wiki pages **only** if the content has cross-project, stable, reusable value (patterns, procedures, entities, concepts). Session-specific or project-specific discoveries go to July, not to the wiki.
 5. Use Obsidian-style wikilinks: `[[Page Name]]`.
 6. Flag contradictions clearly instead of silently choosing one claim.
 7. Cite source files whenever possible.
@@ -42,7 +42,23 @@ Keep the two layers conceptually separate:
 9. Append an entry to `context/wiki/log.md` after every ingest, query, lint pass, or major update.
 10. Prefer small, precise edits over rewriting large pages unnecessarily.
 11. When working inside `apps/july/`, also follow `apps/july/AGENTS.md`, `apps/july/README.md`, `apps/july/ROADMAP.md`, and `apps/july/PROJECT_PROTOCOL.md` when present.
-12. Do not store July's live database inside this repo. It belongs in `C:\Users\sergi\.july\july.db` unless Sergio explicitly decides otherwise.
+12. Do not store July's live database inside this repo. It belongs in `~/.july/july.db` (macOS/Linux) o `C:\Users\sergi\.july\july.db` (Windows).
+
+## Regla de separación de memoria
+
+**July** es la memoria operativa. Va aquí:
+- Estado de sesión y contexto de proyecto
+- Hallazgos, errores resueltos y decisiones tomadas durante una iteración
+- Mejoras posibles (`project_improvement_add`) y pendientes (`project_pending_add`)
+- Todo lo que un agente necesita recuperar al volver a un proyecto
+
+**`context/wiki/`** es el conocimiento curado y estable. Va aquí:
+- Patrones reutilizables entre proyectos (web de cliente, SEO, formularios, etc.)
+- Entidades duraderas: personas, empresas, herramientas
+- Análisis y síntesis que Sergio quiere conservar como referencia
+- Procedimientos y checklists en `docs/notion/`
+
+**Regla práctica:** July recuerda la sesión. La wiki conserva el criterio.
 
 ## Page Conventions
 

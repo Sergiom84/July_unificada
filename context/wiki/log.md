@@ -2,7 +2,7 @@
 type: log
 status: active
 created: 2026-05-08
-updated: 2026-05-09
+updated: 2026-05-10
 sources:
   - context/raw/2026-05-08-conversacion-wiki-codex.txt
   - docs/notion/patron-web-cliente.md
@@ -59,3 +59,5 @@ tags:
 - Aclarado en las skills `july` y `ayuda` que la capa común vive en `C:\Users\sergi\.agents\skills` para que pueda ser utilizada tanto por Claude Code como por Codex.
 - Implementados pendientes por proyecto en July usando la tabla existente `tasks`: comandos `pending-add`, `pendings`, `pending-status`, herramientas MCP `project_pending_add`, `project_pendings`, `project_pending_status` y skill global `/pendiente`.
 - Añadidos alias globales `/mejoras` y `/pendientes` para evitar depender de argumentos detrás de `/july` en el autocompletado de skills.
+- Instalados en Mac los skills de Caveman en `.agents/skills`, habilitado el plugin `caveman@caveman` en Claude, configurado el badge de statusline y verificados `codeburn` y `designlang`.
+- Consultados los riesgos de `caveman-compress` y `caveman-review`: el primero fue marcado alto por leer/escribir archivos y usar subprocess/API; el segundo medio por afectar el formato de revisiones.

@@ -4,6 +4,10 @@ Thumbs.db
 .vscode/
 .idea/
 .claude/settings.local.json
+.claude/worktrees/
+
+# Caveman plugin cache (downloaded skills, like node_modules)
+.agents/
 
 # Environment and secrets
 .env
