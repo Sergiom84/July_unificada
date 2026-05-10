@@ -64,6 +64,7 @@ Esta wiki guarda memoria procedimental para Sergio. El objetivo es convertir fue
 
 - [Procedimiento: Wiki persistente para Codex](../../docs/notion/procedimiento-wiki-codex.md)
 - [Patron: Memoria unificada para programar mejor](../../docs/notion/patron-memoria-para-programar.md)
+- [Procedimiento: Instalar y usar July en Mac](../../docs/notion/instalar-july-en-mac.md)
 - [Prompt de arranque: web, app o software](../../docs/notion/prompt-arranque-proyecto.md)
 - [Patron: Web de cliente para captacion](../../docs/notion/patron-web-cliente.md)
 - [Checklist: Entrega de web de cliente](../../docs/notion/checklist-web-cliente.md)
