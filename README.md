@@ -7,11 +7,23 @@ Une dos capas que deben seguir separadas conceptualmente:
 - `context/` y `docs/`: memoria curada, wiki, procedimientos, decisiones y prompts reutilizables.
 - `apps/july/`: motor operativo July para sesiones, proyectos, recall, MCP, CLI y cockpit.
 
-La base de datos viva de July no debe guardarse dentro de este repositorio. El valor por defecto sigue siendo:
+La base de datos viva de July no debe guardarse dentro de este repositorio. El valor por defecto es:
+
+```text
+~/.july/july.db
+```
+
+En Windows esa ruta equivale normalmente a:
 
 ```text
 C:\Users\sergi\.july\july.db
 ```
+
+## Instalación en Mac
+
+El procedimiento curado está en [docs/notion/instalar-july-en-mac.md](docs/notion/instalar-july-en-mac.md).
+
+Regla práctica: Git sincroniza la memoria curada; `~/.july/july.db` sincroniza la memoria viva.
 
 ## Estructura
 
