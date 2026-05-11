@@ -2,7 +2,7 @@
 type: index
 status: active
 created: 2026-05-08
-updated: 2026-05-10
+updated: 2026-05-11
 sources:
   - context/raw/2026-05-08-conversacion-wiki-codex.txt
   - docs/notion/patron-web-cliente.md

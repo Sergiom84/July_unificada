@@ -2,7 +2,7 @@
 type: log
 status: active
 created: 2026-05-08
-updated: 2026-05-10
+updated: 2026-05-11
 sources:
   - context/raw/2026-05-08-conversacion-wiki-codex.txt
   - docs/notion/patron-web-cliente.md
@@ -73,3 +73,4 @@ tags:
 ## 2026-05-11
 
 - Aclarado que Caveman aparecía en una conversación de Codex porque estaba instalado como skill de proyecto en `.agents/skills` de `July_unificada`, no como skill global de Codex; copiadas las skills de Caveman a `~/.codex/skills` en Mac para que futuras conversaciones de Codex puedan verlas globalmente tras reiniciar o abrir conversación nueva.
+- Añadida la skill compartida `skills/july/SKILL.md` al repo y ampliado `/july` para guardar memorias reutilizables, punteros seguros a secretos y procedimientos detectables entre conversaciones.

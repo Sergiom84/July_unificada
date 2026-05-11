@@ -23,6 +23,8 @@ Responde con este resumen formateado. No busques nada, no llames herramientas: s
 | `/july-inicio` | Arranca sesión, recupera contexto del proyecto desde July |
 | `/july-inicio <objetivo>` | Igual, pero con un objetivo concreto registrado |
 | `/july-wizard` | Onboarding read-only para conectar un proyecto nuevo a July |
+| `/july guarda <texto>` | Guarda memoria reutilizable del proyecto actual |
+| `/july secreto <texto>` | Guarda solo procedimiento y puntero seguro, nunca el secreto en claro |
 
 ### Ficheros y tokens
 | Comando | Qué hace |
