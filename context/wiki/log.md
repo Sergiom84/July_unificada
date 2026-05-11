@@ -69,3 +69,7 @@ tags:
 - Cambiado `~/.claude/skills` en Mac de symlink de carpeta a directorio real con copias de las cinco skills July, porque Claude Code no las mostraba en el autocompletado aunque el symlink resolviera correctamente desde terminal.
 - Añadidos `scripts/sync-claude-skills.sh` y `scripts/sync-claude-skills.ps1` para sincronizar las skills del repo a la carpeta activa de Claude sin depender de symlinks.
 - Sincronizadas las cinco skills July también a `~/.codex/skills` en Mac y añadidos `scripts/sync-codex-skills.sh` y `scripts/sync-codex-skills.ps1` para que Codex pueda cargarlas en su propio selector.
+
+## 2026-05-11
+
+- Aclarado que Caveman aparecía en una conversación de Codex porque estaba instalado como skill de proyecto en `.agents/skills` de `July_unificada`, no como skill global de Codex; copiadas las skills de Caveman a `~/.codex/skills` en Mac para que futuras conversaciones de Codex puedan verlas globalmente tras reiniciar o abrir conversación nueva.
