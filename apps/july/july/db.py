@@ -19,7 +19,10 @@ SKILL_STOPWORDS = {
     "con", "del", "las", "los", "para", "por", "que", "una", "unos", "unas",
     "and", "the", "when", "use", "using", "user", "from", "this", "that",
     "como", "cuando", "donde", "este", "esta", "estos", "estas", "algo",
-    "antes", "despues", "sobre", "tiene", "tener", "hacer", "quiero",
+    "antes", "despues", "sobre", "tiene", "tener", "hacer", "hace", "hacia",
+    "hacia", "hacía", "quiero", "necesito", "cual", "cuál", "era", "sirve",
+    "ayuda", "ayudar", "alguna", "alguno", "tenemos", "skill", "skills",
+    "proyecto", "proyectos", "crear", "crea",
 }
 
 SCHEMA_SQL = """
@@ -1772,7 +1775,7 @@ class JulyDatabase:
             else:
                 score += 1
 
-            if score < 3:
+            if score <= 3:
                 continue
 
             if project_match:

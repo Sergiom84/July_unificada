@@ -24,6 +24,8 @@ Muestra una chuleta rápida. No busques nada ni llames herramientas: solo respon
 | `/july mejoras` | Ver mejoras abiertas, planificadas o en progreso. |
 | `/july secreto <texto>` | Guardar solo puntero/procedimiento seguro, nunca el secreto. |
 | `/july registrar skill <ruta>` | Registrar una skill local para que July pueda sugerirla en otros proyectos. |
+| `/july qué skill sirve para <X>` | Buscar en skills registradas una herramienta útil para esa tarea. |
+| `/july cuál era la skill que hacía <Y>` | Recuperar una skill por función o recuerdo aproximado. |
 | `/july cierra` | Guardar resumen y cerrar sesión July. |
 
 ## Aliases directos
@@ -46,6 +48,11 @@ Si están instalados:
 ## Skills sugeridas por July
 
 July puede guardar referencias a skills locales y sugerirlas cuando el objetivo encaje. Ejemplo: si el trabajo empieza con "quiero crear una automatización, pero no tengo claro el proceso", July puede recordar `entrevistador-procesos` antes de construir.
+
+También puedes preguntar en lenguaje natural:
+
+- "Oye July, quiero hacer X, ¿tenemos alguna skill que me ayude?"
+- "Oye July, ¿cuál era la skill que hacía Y?"
 
 ## Reglas de memoria
 

@@ -245,6 +245,29 @@ class ProjectConversationTests(unittest.TestCase):
         self.assertIn("definir procesos", draft.description)
         self.assertIn("automatizar", draft.trigger_text)
 
+    def test_skill_reference_loader_reads_multiline_description(self) -> None:
+        skill_path = self.root / "presentaciones-visuales.skill"
+        with zipfile.ZipFile(skill_path, "w") as archive:
+            archive.writestr(
+                "presentaciones-visuales/SKILL.md",
+                (
+                    "---\n"
+                    "name: presentaciones-visuales\n"
+                    "description: >\n"
+                    "  Crea presentaciones visuales modernas a partir de una idea.\n"
+                    "  Úsala cuando el usuario quiera convertir contenido en slides.\n"
+                    "---\n"
+                    "# Presentaciones Visuales\n\n"
+                    "Crea presentaciones HTML autocontenidas.\n"
+                ),
+            )
+
+        draft = load_skill_reference(skill_path)
+
+        self.assertEqual(draft.skill_name, "presentaciones-visuales")
+        self.assertIn("presentaciones visuales modernas", draft.description)
+        self.assertIn("convertir contenido en slides", draft.description)
+
 
 class ExposureTests(unittest.TestCase):
     def test_cli_parser_includes_project_commands(self) -> None:

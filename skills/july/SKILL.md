@@ -32,6 +32,7 @@ Cuando Sergio escriba `/july`, `usa july` o una frase equivalente, interpreta lo
 | `pendiente <texto>` o `por hacer <texto>` | Guarda un pendiente del proyecto actual. |
 | `pendientes`, `qué queda`, `temas abiertos` | Lista pendientes abiertos o en progreso. |
 | `ayuda`, `help`, `skills` | Responde como `/july-ayuda`. |
+| `tenemos alguna skill para <X>`, `qué skill sirve para <X>`, `cuál era la skill que hacía <Y>` | Consulta skills registradas con `skill_suggest`; si la pregunta es general, lista `skills`. |
 | `comprimir <fichero>` | Ejecuta `/july-comprimir` y aplica sus verificaciones de seguridad. |
 | `registrar skill <ruta>` | Registra una skill local como referencia reutilizable si el usuario lo pide explícitamente. |
 | `cierra`, `cerrar sesión`, `terminamos` | Resume y cierra la sesión activa si hay información suficiente. |
@@ -58,6 +59,26 @@ Para `/july`, `/july <objetivo>`, `arranca`, `contexto` o `resume`:
 No hagas onboarding completo solo por invocar `/july`. Si el proyecto es nuevo o el contexto es insuficiente, pregunta antes de usar `project_onboard` o `project_action analyze_now`.
 
 Cuando una skill encaje, dilo como recomendación operativa, por ejemplo: "Oye Sergio, para definir este flujo quizá conviene usar `entrevistador-procesos` antes de construir." No ejecutes la skill sin confirmación si cambiaría el modo de trabajo.
+
+## Consultar skills registradas
+
+Cuando Sergio pregunte si hay una skill para una tarea o recuerde vagamente una función:
+
+1. Extrae el objetivo de la pregunta sin añadir contexto inventado.
+2. Usa `skill_suggest "<objetivo>" --project-key <project-key>` si hay proyecto detectado; si no, usa `skill_suggest "<objetivo>"`.
+3. Si la pregunta es "qué skills tengo" o no hay objetivo claro, usa `skills`.
+4. Responde con máximo 3 candidatas:
+   - nombre de la skill;
+   - para qué sirve en una frase;
+   - por qué encaja;
+   - ruta sólo si Sergio parece necesitar instalarla o revisarla.
+5. Si no hay coincidencia clara, dilo y propone registrar una skill si Sergio tiene el archivo.
+
+Ejemplos de intención:
+
+- "Oye July, quiero hacer una presentación visual; ¿tenemos alguna skill?"
+- "Oye July, ¿cuál era la skill que optimizaba prompts?"
+- "¿Qué skill me ayudaba a pensar bien antes de construir una app?"
 
 ## Qué guardar dónde
 

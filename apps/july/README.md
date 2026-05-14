@@ -669,7 +669,17 @@ Estas sugerencias son puntos de referencia. July toma la idea, la revisa, y crea
 
 July tambien puede registrar skills locales existentes para sugerirlas mas adelante. Estas referencias no ejecutan nada por si solas: solo permiten que `proactive_recall`, `project_entry` o `skill-suggest` recuerden que una herramienta puede ayudar.
 
-Ejemplo ya validado: `planificador-procesos.skill` se registra internamente como `entrevistador-procesos` y puede sugerirse cuando un proyecto o conversacion implique crear, automatizar, documentar o definir un proceso ambiguo.
+Ejemplos ya validados:
+
+- `planificador-procesos.skill` se registra internamente como `entrevistador-procesos` y puede sugerirse cuando un proyecto o conversacion implique crear, automatizar, documentar o definir un proceso ambiguo.
+- `optimizador-prompts.skill` se sugiere para ordenar ideas o convertir instrucciones incompletas en prompts claros.
+- `presentaciones-visuales.skill` se sugiere para transformar contenido en slides, decks o presentaciones HTML visuales.
+- `superpowers.skill` se sugiere cuando una tarea compleja requiere entender, planificar, definir riesgos y validar antes de construir.
+
+Uso conversacional esperado:
+
+- "Oye July, quiero hacer X, tenemos alguna skill que me pueda ayudar?"
+- "Oye July, cual era la skill que hacia Y?"
 
 ## Como interpretar este MVP
 

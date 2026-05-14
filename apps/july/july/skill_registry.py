@@ -82,11 +82,32 @@ def _split_frontmatter(text: str) -> tuple[dict[str, str], str]:
         return {}, text
 
     metadata: dict[str, str] = {}
-    for raw_line in match.group(1).splitlines():
+    lines = match.group(1).splitlines()
+    index = 0
+    while index < len(lines):
+        raw_line = lines[index]
         line = raw_line.strip()
         if not line or line.startswith("#") or ":" not in line:
+            index += 1
             continue
         key, value = line.split(":", 1)
-        metadata[key.strip()] = value.strip().strip('"').strip("'")
+        key = key.strip()
+        value = value.strip()
+        if value in {">", "|", ">-", "|-", ">+", "|+"}:
+            block_lines = []
+            index += 1
+            while index < len(lines):
+                next_line = lines[index]
+                if next_line.strip() and not next_line[:1].isspace():
+                    break
+                block_lines.append(next_line.strip())
+                index += 1
+            if value.startswith("|"):
+                metadata[key] = "\n".join(block_lines).strip()
+            else:
+                metadata[key] = " ".join(line for line in block_lines if line).strip()
+            continue
+        metadata[key] = value.strip('"').strip("'")
+        index += 1
 
     return metadata, text[match.end():]
