@@ -151,7 +151,7 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - July mantiene preferencias por proyecto para decidir que sugerir: Caveman, Design Extract, CodeBurn, resumen automatico y confirmacion antes de guardar.
 - `project-action help` devuelve una ayuda conversacional con lo que July sabe, lo que no sabe y lo que puede hacer.
 - El cockpit muestra el tipo de proyecto y ofrece una accion de ayuda.
-- Suite de skills globales July preparada en `~/.agents/skills/` para que Codex y Claude apliquen el ritual de entrada, recuperación, ayuda, guardado, pendientes, mejoras y cierre.
+- Suite de skills globales July preparada en `~/.codex/skills` y `~/.claude/skills` para que Codex y Claude apliquen el ritual de entrada, recuperación, ayuda, guardado, pendientes, mejoras y cierre sin duplicarse en el selector.
 
 ### Nuevo en v0.6
 
