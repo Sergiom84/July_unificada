@@ -5,7 +5,7 @@ description: Wrapper seguro sobre caveman-compress para comprimir ficheros largo
 
 # Skill: /july-comprimir
 
-Wrapper seguro sobre caveman-compress. Comprime un fichero de procedimientos o conocimiento usando Claude, con verificación de ruta antes de actuar.
+Wrapper seguro sobre caveman-compress. Comprime un fichero de procedimientos o conocimiento con verificación de ruta antes de actuar. No guarda memoria en July ni modifica su base de datos.
 
 ## Cuándo se usa
 
@@ -25,6 +25,7 @@ Si el usuario no indicó un fichero concreto, pregúntale cuál quiere comprimir
 |---|---|
 | `*.env`, `.env.*` | Puede contener claves o tokens |
 | `context/secure/` | Memoria sensible cifrada |
+| `context/raw/` | Fuente original que debe conservarse intacta |
 | `*.db`, `july.db` | Base de datos de July |
 | `*credentials*`, `*secret*`, `*token*`, `*key*` | Nombres que sugieren secretos |
 | Cualquier fichero > 500 KB | Límite de la herramienta |

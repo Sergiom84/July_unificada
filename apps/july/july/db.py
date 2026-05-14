@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
+import unicodedata
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
@@ -12,6 +14,13 @@ IMPROVEMENT_STATUSES = {"open", "planned", "in_progress", "done", "dismissed"}
 ACTIVE_IMPROVEMENT_STATUSES = ("open", "planned", "in_progress")
 IMPROVEMENT_PRIORITIES = {"low", "normal", "high"}
 TASK_STATUSES = {"pending", "in_progress", "done"}
+SKILL_REFERENCE_STATUSES = {"active", "inactive"}
+SKILL_STOPWORDS = {
+    "con", "del", "las", "los", "para", "por", "que", "una", "unos", "unas",
+    "and", "the", "when", "use", "using", "user", "from", "this", "that",
+    "como", "cuando", "donde", "este", "esta", "estos", "estas", "algo",
+    "antes", "despues", "sobre", "tiene", "tener", "hacer", "quiero",
+}
 
 SCHEMA_SQL = """
 PRAGMA foreign_keys = ON;
@@ -202,6 +211,23 @@ CREATE TABLE IF NOT EXISTS external_references (
     created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS skill_references (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    skill_name TEXT NOT NULL UNIQUE,
+    display_name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    source_path TEXT,
+    trigger_text TEXT NOT NULL,
+    domains_json TEXT NOT NULL DEFAULT '[]',
+    project_keys_json TEXT NOT NULL DEFAULT '[]',
+    status TEXT NOT NULL DEFAULT 'active',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_skill_references_status
+ON skill_references(status, updated_at);
+
 CREATE TABLE IF NOT EXISTS developer_profile (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     profile_key TEXT NOT NULL UNIQUE DEFAULT 'default',
@@ -279,6 +305,38 @@ END;
 
 def utc_now() -> str:
     return datetime.now(UTC).replace(microsecond=0).isoformat()
+
+
+def normalize_json_array(values: list[str] | tuple[str, ...] | None) -> list[str]:
+    if not values:
+        return []
+    normalized = []
+    for value in values:
+        item = str(value).strip()
+        if item and item not in normalized:
+            normalized.append(item)
+    return normalized
+
+
+def parse_json_array(value: str | None) -> list[str]:
+    if not value:
+        return []
+    try:
+        parsed = json.loads(value)
+    except json.JSONDecodeError:
+        return []
+    if not isinstance(parsed, list):
+        return []
+    return [str(item) for item in parsed if str(item).strip()]
+
+
+def skill_reference_tokens(text: str) -> set[str]:
+    normalized = unicodedata.normalize("NFKD", text.lower())
+    normalized = "".join(ch for ch in normalized if not unicodedata.combining(ch))
+    return {
+        token for token in re.findall(r"[a-z0-9][a-z0-9_/-]{2,}", normalized)
+        if token not in SKILL_STOPWORDS
+    }
 
 
 class JulyDatabase:
@@ -1186,7 +1244,7 @@ class JulyDatabase:
             "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
             "clarification_events", "sessions", "topic_keys", "topic_links",
             "model_contributions", "url_metadata", "external_references", "projects",
-            "project_improvements",
+            "project_improvements", "skill_references",
         }
         if table not in allowed_tables:
             raise ValueError(f"Unsupported table: {table}")
@@ -1570,13 +1628,187 @@ class JulyDatabase:
         with self.connection() as conn:
             return conn.execute(query, params).fetchall()
 
+    # ── Skill references ─────────────────────────────────────────────
+
+    def upsert_skill_reference(
+        self,
+        *,
+        skill_name: str,
+        description: str,
+        source_path: str | None = None,
+        trigger_text: str | None = None,
+        display_name: str | None = None,
+        domains: list[str] | tuple[str, ...] | None = None,
+        project_keys: list[str] | tuple[str, ...] | None = None,
+        status: str = "active",
+    ) -> dict:
+        skill_name = skill_name.strip()
+        description = description.strip()
+        trigger_text = (trigger_text or description).strip()
+        display_name = (display_name or skill_name).strip()
+        if not skill_name:
+            raise ValueError("skill_name is required")
+        if not description:
+            raise ValueError("description is required")
+        if status not in SKILL_REFERENCE_STATUSES:
+            raise ValueError(f"Unsupported skill reference status: {status}")
+
+        timestamp = utc_now()
+        domains_json = json.dumps(normalize_json_array(domains), ensure_ascii=True)
+        project_keys_json = json.dumps(normalize_json_array(project_keys), ensure_ascii=True)
+        with self.connection() as conn:
+            existing = conn.execute(
+                "SELECT id FROM skill_references WHERE skill_name = ?",
+                (skill_name,),
+            ).fetchone()
+            if existing:
+                conn.execute(
+                    """
+                    UPDATE skill_references
+                    SET display_name = ?, description = ?, source_path = ?, trigger_text = ?,
+                        domains_json = ?, project_keys_json = ?, status = ?, updated_at = ?
+                    WHERE skill_name = ?
+                    """,
+                    (
+                        display_name, description, source_path, trigger_text,
+                        domains_json, project_keys_json, status, timestamp, skill_name,
+                    ),
+                )
+            else:
+                conn.execute(
+                    """
+                    INSERT INTO skill_references (
+                        skill_name, display_name, description, source_path, trigger_text,
+                        domains_json, project_keys_json, status, created_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        skill_name, display_name, description, source_path, trigger_text,
+                        domains_json, project_keys_json, status, timestamp, timestamp,
+                    ),
+                )
+            row = conn.execute(
+                "SELECT * FROM skill_references WHERE skill_name = ?",
+                (skill_name,),
+            ).fetchone()
+            return dict(row)
+
+    def list_skill_references(
+        self,
+        *,
+        status: str | None = "active",
+        include_inactive: bool = False,
+        include_trigger: bool = False,
+        limit: int = 20,
+    ) -> list[sqlite3.Row]:
+        if status and status not in SKILL_REFERENCE_STATUSES:
+            raise ValueError(f"Unsupported skill reference status: {status}")
+        columns = (
+            "id, skill_name, display_name, description, source_path, "
+            f"{'trigger_text, ' if include_trigger else ''}"
+            "domains_json, project_keys_json, status, created_at, updated_at"
+        )
+        with self.connection() as conn:
+            if include_inactive:
+                return conn.execute(
+                    f"""
+                    SELECT {columns}
+                    FROM skill_references
+                    ORDER BY updated_at DESC, id DESC
+                    LIMIT ?
+                    """,
+                    (limit,),
+                ).fetchall()
+            return conn.execute(
+                f"""
+                SELECT {columns}
+                FROM skill_references
+                WHERE status = ?
+                ORDER BY updated_at DESC, id DESC
+                LIMIT ?
+                """,
+                (status or "active", limit),
+            ).fetchall()
+
+    def suggest_skill_references(
+        self,
+        text: str,
+        *,
+        project_key: str | None = None,
+        limit: int = 5,
+    ) -> list[dict]:
+        query_tokens = skill_reference_tokens(text)
+        if not query_tokens:
+            return []
+
+        suggestions: list[dict] = []
+        for row in self.list_skill_references(limit=200, include_trigger=True):
+            item = dict(row)
+            domains = parse_json_array(item.get("domains_json"))
+            project_keys = parse_json_array(item.get("project_keys_json"))
+            haystack = " ".join(
+                [
+                    item["skill_name"],
+                    item["display_name"],
+                    item["description"],
+                    item.get("source_path") or "",
+                    " ".join(domains),
+                ]
+            )
+            haystack = f"{haystack} {item.get('trigger_text') or ''}"
+
+            skill_tokens = skill_reference_tokens(haystack)
+            overlap = sorted(query_tokens & skill_tokens)
+            domain_hits = sorted(query_tokens & skill_reference_tokens(" ".join(domains)))
+            project_match = bool(project_key and project_key in project_keys)
+            if not overlap and not project_match:
+                continue
+
+            score = (len(overlap) * 2) + (len(domain_hits) * 3)
+            if project_match:
+                score += 8
+            elif project_keys:
+                score -= 1
+            else:
+                score += 1
+
+            if score < 3:
+                continue
+
+            if project_match:
+                reason = f"Registrada para este proyecto; coincide con: {', '.join(overlap[:5]) or project_key}"
+            elif domain_hits:
+                reason = f"Coincide con dominios: {', '.join(domain_hits[:5])}"
+            else:
+                reason = f"Coincide con: {', '.join(overlap[:5])}"
+
+            suggestions.append({
+                "type": "skill_reference",
+                "skill_name": item["skill_name"],
+                "display_name": item["display_name"],
+                "description": item["description"],
+                "source_path": item.get("source_path"),
+                "domains": domains,
+                "project_keys": project_keys,
+                "score": score,
+                "reason": reason,
+            })
+
+        suggestions.sort(key=lambda suggestion: suggestion["score"], reverse=True)
+        return suggestions[:limit]
+
     # ── Proactive recall ──────────────────────────────────────────────
 
     def proactive_recall(self, raw_input: str, project_key: str | None = None, limit: int = 5) -> dict:
         """Search memory proactively for related items when a new input arrives."""
         words = [w for w in raw_input.lower().split() if len(w) > 3]
         if not words:
-            return {"related_memories": [], "related_sessions": [], "suggestions": []}
+            return {
+                "related_memories": [],
+                "related_sessions": [],
+                "suggestions": [],
+                "skill_suggestions": self.suggest_skill_references(raw_input, project_key=project_key, limit=limit),
+            }
 
         with self.connection() as conn:
             # Search in memory via FTS
@@ -1645,6 +1877,7 @@ class JulyDatabase:
             "related_memories": [dict(r) for r in memory_rows],
             "related_sessions": [dict(r) for r in session_rows],
             "suggestions": suggestions,
+            "skill_suggestions": self.suggest_skill_references(raw_input, project_key=project_key, limit=limit),
         }
 
     def stats(self) -> dict[str, int]:
@@ -1661,6 +1894,7 @@ class JulyDatabase:
                 "model_contributions": conn.execute("SELECT COUNT(*) FROM model_contributions").fetchone()[0],
                 "url_metadata": conn.execute("SELECT COUNT(*) FROM url_metadata").fetchone()[0],
                 "external_references": conn.execute("SELECT COUNT(*) FROM external_references").fetchone()[0],
+                "skill_references": conn.execute("SELECT COUNT(*) FROM skill_references").fetchone()[0],
                 "projects": conn.execute("SELECT COUNT(*) FROM projects").fetchone()[0],
                 "project_improvements": conn.execute("SELECT COUNT(*) FROM project_improvements").fetchone()[0],
                 "developer_interactions": conn.execute("SELECT COUNT(*) FROM developer_interactions").fetchone()[0],
@@ -1793,7 +2027,7 @@ class JulyDatabase:
             for table in (
                 "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
                 "clarification_events", "sessions", "topic_keys", "topic_links",
-                "model_contributions", "url_metadata", "external_references", "projects",
+                "model_contributions", "url_metadata", "external_references", "skill_references", "projects",
                 "project_improvements", "developer_profile", "developer_interactions",
         ):
                 rows = conn.execute(f"SELECT * FROM {table} ORDER BY id ASC").fetchall()

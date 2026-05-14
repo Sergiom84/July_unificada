@@ -91,7 +91,7 @@ Experiencia objetivo:
 - cuando algo merece persistir, debe poder preguntarlo de forma natural: "quieres que lo guarde?", "quieres que esto quede como referencia para otro momento?";
 - al volver a conversar despues, debe recuperar contexto previo del proyecto sin obligar al usuario a empezar de cero.
 
-Importante: esta es la experiencia objetivo del producto. El codigo actual ya implementa la base de memoria, sesiones, trazabilidad, MCP, un primer cockpit local por proyecto y un wizard inicial con perfilado del tipo de proyecto.
+Importante: esta es la experiencia objetivo del producto. El codigo actual ya implementa la base de memoria, sesiones, trazabilidad, MCP, un primer cockpit local por proyecto, un wizard inicial con perfilado del tipo de proyecto y sugerencias de skills registradas.
 
 ## Que implementa este corte
 
@@ -151,7 +151,7 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - July mantiene preferencias por proyecto para decidir que sugerir: Caveman, Design Extract, CodeBurn, resumen automatico y confirmacion antes de guardar.
 - `project-action help` devuelve una ayuda conversacional con lo que July sabe, lo que no sabe y lo que puede hacer.
 - El cockpit muestra el tipo de proyecto y ofrece una accion de ayuda.
-- Skill global `july-wizard` preparada en `~/.agents/skills/july-wizard` para que Codex y Claude apliquen este ritual de entrada, ayuda, guardado y cierre.
+- Suite de skills globales July preparada en `~/.agents/skills/` para que Codex y Claude apliquen el ritual de entrada, recuperación, ayuda, guardado, pendientes, mejoras y cierre.
 
 ### Nuevo en v0.6
 
@@ -165,11 +165,22 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - 41 comandos CLI.
 - 14 tablas en la base de datos.
 
+### Nuevo en v0.7
+
+- Tabla `skill_references` para registrar skills locales como referencias reutilizables sin mezclarlas con memoria de proyecto.
+- Nuevos comandos CLI: `skill-register`, `skills` y `skill-suggest`.
+- Nuevas herramientas MCP: `skill_register`, `skill_references` y `skill_suggest`.
+- `proactive_recall` y `project_entry` devuelven `skill_suggestions` cuando el contexto encaja con una skill registrada.
+- July puede recordar skills globales y sugerirlas en otros proyectos, por ejemplo `entrevistador-procesos` cuando el usuario quiere crear o automatizar un flujo todavia ambiguo.
+- 34 herramientas MCP expuestas.
+- 44 comandos CLI.
+- 15 tablas en la base de datos.
+
 ## Modelo operativo
 
 Pipeline actual:
 
-`input libre -> extraer urls/rutas/proyecto -> clasificar -> recall proactivo -> guardar inbox -> crear tarea/memoria candidata/mejora/pendiente -> fetch URL metadata -> sugerir referencias externas -> recuperar`
+`input libre -> extraer urls/rutas/proyecto -> clasificar -> recall proactivo -> sugerir skills registradas -> guardar inbox -> crear tarea/memoria candidata/mejora/pendiente -> fetch URL metadata -> sugerir referencias externas -> recuperar`
 
 Flujo actual sobre ese pipeline:
 
@@ -424,7 +435,26 @@ Uso conversacional esperado:
 
 July debe resolver el proyecto activo, guardar el pendiente como `pending` y recuperarlo mas tarde cuando el usuario pregunte que queda por hacer. Cuando se complete, debe marcarse como `done`.
 
-### 19. Cockpit local por proyecto
+### 19. Skills registradas como referencias
+
+```powershell
+# Registrar una skill local empaquetada
+.\scripts\july.ps1 skill-register "C:\Users\sergi\Documents\Skills\planificador-procesos.skill" --domain skills --domain procesos --domain automatizacion --domain workflow
+
+# Pedir sugerencias contra un objetivo o contexto de trabajo
+.\scripts\july.ps1 skill-suggest "Quiero crear una automatizacion pero no tengo claro el proceso" --project-key indalo-padel
+
+# Ver skills registradas
+.\scripts\july.ps1 skills
+```
+
+Uso conversacional esperado:
+
+> July, voy a crear una automatizacion compleja, pero todavia no tengo claro el proceso.
+
+July debe poder responder algo como: "Oye Sergio, para esto conviene usar `entrevistador-procesos` antes de construir, porque el flujo todavia no esta cerrado."
+
+### 20. Cockpit local por proyecto
 
 ```powershell
 # Arrancar la UI local
@@ -456,7 +486,7 @@ Variables de configuracion UI:
 - `JULY_UI_PORT`
 - `JULY_UI_BASE_URL`
 
-Herramientas MCP expuestas actualmente (`31`):
+Herramientas MCP expuestas actualmente (`34`):
 
 - `capture_input` (con proactive recall, fetch URLs, model traceability)
 - `search_context`
@@ -484,6 +514,9 @@ Herramientas MCP expuestas actualmente (`31`):
 - `save_model_contribution`
 - `fetch_url`
 - `fetch_reference`
+- `skill_register`
+- `skill_references`
+- `skill_suggest`
 - `proactive_recall`
 - `conversation_checkpoint`
 - `architect_insights`
@@ -550,6 +583,7 @@ Tablas principales:
 | `model_contributions` | Contribuciones trazables de modelos IA |
 | `url_metadata` | Metadatos extraidos de URLs (titulo, descripcion, YouTube) |
 | `external_references` | Referencias a fuentes externas (skills.sh, agents.md) |
+| `skill_references` | Skills locales registradas para sugerencias proactivas |
 | `projects` | Registro canonico de proyectos para cockpit, deep links, tipo de proyecto, tags y preferencias |
 
 Indices FTS5: `inbox_items_fts`, `memory_items_fts`.
@@ -630,6 +664,12 @@ July puede sugerir consultar fuentes externas cuando detecta que un input se ben
 - **agents.md**: Cuando el input implica crear agentes, sub-agentes, orquestacion o automatizacion.
 
 Estas sugerencias son puntos de referencia. July toma la idea, la revisa, y crea su propia implementacion. No depende de ellas ni las copia literalmente.
+
+## Skills registradas como punto de apoyo
+
+July tambien puede registrar skills locales existentes para sugerirlas mas adelante. Estas referencias no ejecutan nada por si solas: solo permiten que `proactive_recall`, `project_entry` o `skill-suggest` recuerden que una herramienta puede ayudar.
+
+Ejemplo ya validado: `planificador-procesos.skill` se registra internamente como `entrevistador-procesos` y puede sugerirse cuando un proyecto o conversacion implique crear, automatizar, documentar o definir un proceso ambiguo.
 
 ## Como interpretar este MVP
 

@@ -18,6 +18,7 @@ from july.pipeline import (
     enrich_plan_with_proactive_recall,
 )
 from july.project_conversation import ProjectConversationService
+from july.skill_registry import load_skill_reference
 from july.url_fetcher import fetch_url_metadata
 
 PROTOCOL_VERSION = "2025-03-26"
@@ -462,11 +463,60 @@ class JulyMCPServer:
                 },
                 handler=self.tool_fetch_reference,
             ),
+            # ── Skill references ─────────────────────────────
+            "skill_register": ToolSpec(
+                name="skill_register",
+                title="Register Skill Reference",
+                description="Register a local .skill archive, skill folder, or SKILL.md as a reusable July reference.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Path to a .skill archive, skill folder, or SKILL.md."},
+                        "name": {"type": "string", "description": "Optional skill name override."},
+                        "description": {"type": "string", "description": "Optional description override."},
+                        "trigger_text": {"type": "string", "description": "Optional text used for suggestion matching."},
+                        "domains": {"type": "array", "items": {"type": "string"}},
+                        "project_keys": {"type": "array", "items": {"type": "string"}},
+                        "status": {"type": "string", "enum": ["active", "inactive"]},
+                    },
+                    "required": ["path"],
+                },
+                handler=self.tool_skill_register,
+            ),
+            "skill_references": ToolSpec(
+                name="skill_references",
+                title="Skill References",
+                description="List registered skills that July can suggest proactively.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "status": {"type": "string", "enum": ["active", "inactive"]},
+                        "include_inactive": {"type": "boolean"},
+                        "limit": {"type": "integer"},
+                    },
+                },
+                handler=self.tool_skill_references,
+            ),
+            "skill_suggest": ToolSpec(
+                name="skill_suggest",
+                title="Suggest Skills",
+                description="Suggest registered skills for the supplied text and optional project key.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "text": {"type": "string"},
+                        "project_key": {"type": "string"},
+                        "limit": {"type": "integer"},
+                    },
+                    "required": ["text"],
+                },
+                handler=self.tool_skill_suggest,
+            ),
             # ── Proactive recall ─────────────────────────────
             "proactive_recall": ToolSpec(
                 name="proactive_recall",
                 title="Proactive Recall",
-                description="Search memory proactively for related items. Returns memories, sessions, and suggestions.",
+                description="Search memory proactively for related items. Returns memories, sessions, suggestions, and registered skill suggestions.",
                 input_schema={
                     "type": "object",
                     "properties": {
@@ -931,6 +981,42 @@ class JulyMCPServer:
         source_key = require_string(arguments, "source_key")
         return fetch_reference_page(source_key)
 
+    def tool_skill_register(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        draft = load_skill_reference(require_string(arguments, "path"))
+        registered = self.database.upsert_skill_reference(
+            skill_name=arguments.get("name") or draft.skill_name,
+            display_name=arguments.get("name") or draft.display_name,
+            description=arguments.get("description") or draft.description,
+            source_path=draft.source_path,
+            trigger_text=arguments.get("trigger_text") or draft.trigger_text,
+            domains=string_list(arguments.get("domains")),
+            project_keys=string_list(arguments.get("project_keys")),
+            status=arguments.get("status", "active"),
+        )
+        return {"skill_reference": registered}
+
+    def tool_skill_references(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        limit = int(arguments.get("limit", 20))
+        return {
+            "skills": [
+                dict(row) for row in self.database.list_skill_references(
+                    status=arguments.get("status", "active"),
+                    include_inactive=bool(arguments.get("include_inactive", False)),
+                    limit=limit,
+                )
+            ]
+        }
+
+    def tool_skill_suggest(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        limit = int(arguments.get("limit", 5))
+        return {
+            "skill_suggestions": self.database.suggest_skill_references(
+                require_string(arguments, "text"),
+                project_key=arguments.get("project_key"),
+                limit=limit,
+            )
+        }
+
     def tool_proactive_recall(self, arguments: dict[str, Any]) -> dict[str, Any]:
         text = require_string(arguments, "text")
         project_key = arguments.get("project_key")
@@ -1037,6 +1123,16 @@ def require_string(arguments: dict[str, Any], key: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"Argument '{key}' must be a non-empty string")
     return value.strip()
+
+
+def string_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value.strip()] if value.strip() else []
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    return []
 
 
 def rows_to_dicts(result: dict[str, Any]) -> dict[str, Any]:

@@ -5,52 +5,87 @@ description: Arranca una sesión de trabajo conectada a July para el proyecto ac
 
 # Skill: /july-inicio
 
-Arranca una sesión de trabajo conectada a July para el proyecto actual.
+Arranca una sesión de trabajo con July para el proyecto actual. Es el flujo normal de inicio: recuperar contexto, abrir sesión y dejar al agente listo para trabajar sin repetir onboarding innecesario.
 
 ## Cuándo se usa
 
-Cuando el usuario escribe `/july-inicio` al comenzar a trabajar en cualquier proyecto.
+- Al empezar una conversación de trabajo en un repo.
+- Cuando Sergio pide recuperar contexto del proyecto.
+- Cuando `/july` se invoca sin argumentos o con un objetivo.
+
+Si Sergio pide conectar un proyecto nuevo con una primera foto del repo, usa `/july-wizard` en lugar de este flujo.
 
 ## Lo que debes hacer
 
-Ejecuta estos pasos en orden. No muestres JSON crudo al usuario; sintetiza la respuesta de forma conversacional.
+Ejecuta estos pasos en orden. No muestres JSON crudo al usuario; sintetiza la respuesta.
 
 ### Paso 1 - Detectar el proyecto
 
-Usa `mcp__july__project_entry` con `repo_path` apuntando al directorio de trabajo actual (`$cwd`). Esto determina si el proyecto es nuevo, parcial o conocido.
+Usa `project_entry` con `repo_path` apuntando al directorio de trabajo actual (`$cwd`). Esto devuelve `project_key`, estado (`new`, `partial` o `known`), superficie del repo y recomendación inicial.
 
-### Paso 2 - Abrir sesión
+### Paso 2 - Recuperar contexto
 
-Usa `mcp__july__session_start` con:
-- `session_key`: `<project_key>-<YYYY-MM-DD>-<HH:MM>` usando fecha y hora actuales
-- `project_key`: el detectado en el paso anterior
-- `agent_name`: `Claude` en Claude Code o `Codex` en Codex
-- `goal`: el objetivo que el usuario haya indicado al invocar el skill, o vacío si no dijo nada
+Con el `project_key` detectado:
 
-### Paso 3 - Recuperar contexto reciente
+- usa `project_context` para memoria, inbox, tareas y mejoras;
+- usa `session_context` con `limit: 3` para sesiones recientes;
+- usa `project_pendings` para pendientes abiertos o en progreso;
+- usa `project_improvements` para mejoras abiertas, planificadas o en progreso.
+- revisa `related_context.skill_suggestions` de `project_entry`;
+- si Sergio indicó un objetivo, usa `proactive_recall` o `skill_suggest` con ese objetivo para recuperar skills útiles.
 
-Usa `mcp__july__session_context` con el `project_key` del paso 1, `limit: 3`. Esto trae las últimas sesiones con sus resúmenes, hallazgos y siguientes pasos.
+Si el MCP no está disponible, usa el fallback CLI equivalente desde `C:\Users\sergi\Desktop\Aplicaciones\July_unificada`.
+
+### Paso 3 - Abrir sesión
+
+Usa `session_start` con:
+
+- `session_key`: `<project_key>-<YYYY-MM-DD>-<HH:MM>`;
+- `project_key`: el detectado en el paso 1;
+- `agent_name`: `codex` en Codex o `claude` en Claude Code;
+- `goal`: el objetivo indicado por Sergio, o una frase breve si la intención está clara.
+
+No abras varias sesiones para el mismo arranque. Si ya hay una sesión activa en el contexto actual, continúa con ella.
 
 ### Paso 4 - Presentar el arranque
 
-Responde de forma conversacional siguiendo este esquema según el estado del proyecto:
+Responde según el estado útil del proyecto:
 
-**Proyecto conocido:**
-> "Este proyecto ya tiene contexto en July. La última sesión fue [fecha] y dejó pendiente: [next_steps]. ¿Continuamos desde ahí o tienes algo nuevo?"
+**Proyecto conocido**
 
-**Proyecto nuevo:**
-> "No tengo contexto previo de este proyecto. ¿Quieres que haga un análisis inicial (onboarding) para guardar una primera foto del repo, o prefieres arrancar directamente con una tarea concreta?"
+> Este proyecto ya tiene contexto en July. Última referencia útil: [resumen breve]. Pendientes relevantes: [lista corta]. ¿Seguimos desde ahí o vienes con una tarea nueva?
 
-**Si hay pendientes abiertos** (usa `mcp__july__project_pendings` con `project_key`):
-> Menciónalos brevemente al final: "Hay [N] pendientes abiertos: [lista corta]."
+**Proyecto parcial**
+
+> July tiene contexto parcial de este proyecto. Puedo continuar con lo recuperado o hacer un refresh selectivo de [zona que falta]. ¿Qué prefieres?
+
+**Proyecto nuevo**
+
+> No tengo contexto útil de este proyecto en July. Puedo hacer onboarding read-only con `/july-wizard` para guardar una primera foto, o arrancamos directamente con una tarea concreta.
+
+Menciona mejoras abiertas solo si son relevantes para el objetivo o si Sergio pidió backlog/ideas.
+
+Menciona skills sugeridas solo si la coincidencia es clara. Formato recomendado: "Oye Sergio, para esto quizá conviene usar `nombre-skill` porque [motivo breve]."
 
 ### Paso 5 - Esperar instrucción
 
-No hagas nada más hasta que el usuario indique qué quiere trabajar.
+No modifiques código ni ejecutes onboarding completo hasta que Sergio indique qué quiere trabajar.
+
+## Fallback CLI mínimo
+
+```powershell
+cd C:\Users\sergi\Desktop\Aplicaciones\July_unificada
+.\scripts\july.ps1 project-entry --repo-path <repo-actual>
+.\scripts\july.ps1 project-context <project-key>
+.\scripts\july.ps1 session-context --project <project-key> --limit 3
+.\scripts\july.ps1 pendings --project-key <project-key>
+.\scripts\july.ps1 improvements --project-key <project-key>
+.\scripts\july.ps1 skill-suggest "<objetivo>" --project-key <project-key>
+.\scripts\july.ps1 session-start <session-key> --project <project-key> --agent codex --goal "<objetivo>"
+```
 
 ## Notas
 
-- Si el usuario escribe `/july-inicio <objetivo>`, usa ese texto como `goal` en `session_start`.
-- Al cerrar la sesión (cuando el usuario termine), usa `mcp__july__session_summary` + `mcp__july__session_end`.
-- Si el proyecto es nuevo y el usuario acepta el onboarding, usa `mcp__july__plug_project`.
 - Habla siempre en español con tildes correctas.
+- Si el contexto recuperado contradice el estado real del repo, dilo claramente y haz refresh selectivo antes de actuar.
+- Al cerrar la sesión, usa `session_summary` y `session_end`.

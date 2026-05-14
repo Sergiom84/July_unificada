@@ -37,7 +37,7 @@ Claude Code should load these through `~/.claude/skills` or `%USERPROFILE%\.clau
 
 Codex does not rely on Claude's `~/.claude/skills` autocompletion. To expose these skills in Codex's own selector, sync them to `~/.codex/skills` or `%USERPROFILE%\.codex\skills` with `scripts/sync-codex-skills.sh` (macOS/Linux) or `scripts/sync-codex-skills.ps1` (Windows). When Sergio refers to one of these commands, treat the matching local skill in `skills/` as the procedure to follow even if the selector has not refreshed yet:
 
-Keep repo-owned July wrappers with the explicit `july-` prefix so their origin is obvious and Claude Code can autocomplete them. Do not rename them to generic commands like `/inicio` or `/comprimir`. Third-party or global skills keep their native names, for example `/caveman-compress`.
+Keep repo-owned July wrappers with the explicit `july-` prefix so their origin is obvious and Claude Code can autocomplete them. Do not rename them to generic commands like `/inicio` or `/comprimir`. Short aliases that are domain-specific (`/july`, `/mejoras`, `/pendiente`, `/pendientes`) may exist as convenience entrypoints, but their behavior must point back to the July contract in `skills/july/SKILL.md`. Third-party or global skills keep their native names, for example `/caveman-compress`.
 
 | Command | Source | Purpose |
 |---|---|---|
@@ -46,6 +46,9 @@ Keep repo-owned July wrappers with the explicit `july-` prefix so their origin i
 | `/july-wizard` | `skills/july-wizard/SKILL.md` | Run read-only onboarding for a new or partial project in July. |
 | `/july-comprimir` | `skills/july-comprimir/SKILL.md` | Compress a long procedural/context file with Caveman safeguards. |
 | `/july-ayuda` | `skills/july-ayuda/SKILL.md` | Show the quick help sheet for July, Caveman, and common agent commands. |
+| `/mejoras` | `skills/mejoras/SKILL.md` | Shortcut to list or manage possible project improvements in July. |
+| `/pendiente` | `skills/pendiente/SKILL.md` | Shortcut to add or close a decided project pending item in July. |
+| `/pendientes` | `skills/pendientes/SKILL.md` | Shortcut to list or update open project pending items in July. |
 
 ## Core Rules
 
@@ -68,6 +71,7 @@ Keep repo-owned July wrappers with the explicit `july-` prefix so their origin i
 - Estado de sesión y contexto de proyecto
 - Hallazgos, errores resueltos y decisiones tomadas durante una iteración
 - Mejoras posibles (`project_improvement_add`) y pendientes (`project_pending_add`)
+- Referencias de skills reutilizables que July puede sugerir entre proyectos (`skill_references`)
 - Todo lo que un agente necesita recuperar al volver a un proyecto
 
 **`context/wiki/`** es el conocimiento curado y estable. Va aquí:

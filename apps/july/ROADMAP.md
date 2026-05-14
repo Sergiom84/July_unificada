@@ -83,9 +83,22 @@ Lo que ya existe hoy en el codigo:
 - 14 tablas en la base de datos.
 - Tests ampliados para mejoras y pendientes por proyecto, CLI/MCP y UI del cockpit.
 
+### Bloque v0.7 (implementado)
+
+- Registro nativo de skills locales con tabla `skill_references`.
+- Parser de `.skill`, carpetas de skill y `SKILL.md` para extraer `name`, `description` y texto de activacion.
+- Nuevos comandos CLI: `skill-register`, `skills` y `skill-suggest`.
+- Nuevas herramientas MCP: `skill_register`, `skill_references` y `skill_suggest`.
+- `proactive_recall` incorpora `skill_suggestions`; `project_entry` las hereda dentro de `related_context`.
+- Registrada como referencia global la skill `entrevistador-procesos` desde `C:\Users\sergi\Documents\Skills\planificador-procesos.skill`.
+- 34 herramientas MCP expuestas.
+- 44 comandos CLI.
+- 15 tablas en la base de datos.
+- Tests ampliados para registro, lectura de `.skill`, sugerencias, CLI y MCP.
+
 Estado resumido:
 
-- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto.
+- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables.
 - Documentado y validado manualmente: protocolo operativo por proyecto (`PROJECT_PROTOCOL.md`) con distincion entre proyecto nuevo, proyecto conocido, iteracion, cierre, reglas de guardado y Fase 1/Fase 2.
 - Parcial: uso de LLM para refinado de clasificacion y memoria (funcional pero requiere API key).
 - Pendiente: refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
@@ -129,13 +142,13 @@ Primer caso real usado para validacion manual:
    Seguir mejorando densidad visual, filtros y recuperacion una vez resuelto el primer giro hacia consola de contexto memory-first y ayuda contextual.
 
 2. Continuidad conversacional real.
-   Probar y refinar la skill global `july-wizard` para que Codex, Claude u otros agentes llamen a `project_entry`, `project_action help`, checkpoints y protocolo de sesion como comportamiento natural.
+   Probar y refinar la suite de skills globales July (`july`, `july-inicio`, `july-wizard` y aliases de mejoras/pendientes) para que Codex, Claude u otros agentes llamen a `project_entry`, `project_action help`, checkpoints y protocolo de sesion como comportamiento natural.
 
 3. Refresco selectivo y staleness.
    Distinguir mejor entre contexto vigente, contexto parcial y contexto envejecido para no rehacer onboarding sin necesidad.
 
-4. Sugerencias cross-project mas utiles.
-   Mejorar cuando July trae una solucion de otro repo para que ayude de verdad sin volverse ruidosa.
+4. Sugerencias cross-project y de skills mas utiles.
+   Mejorar el ranking para que July traiga soluciones de otros repos o skills registradas con menos ruido y mejores motivos.
 
 5. UX conversacional para almacenamiento.
    Afinar las reglas de "guardar directo", "preguntar" o "ignorar" para evitar ruido y mantener memoria curada.

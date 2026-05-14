@@ -1158,6 +1158,7 @@ def build_project_help(entry: dict[str, Any]) -> dict[str, Any]:
         "Guardar decisiones, hallazgos y errores resueltos.",
         "Guardar ideas o posibles mejoras para revisarlas mas adelante.",
         "Guardar pendientes por hacer y marcarlos como done cuando se completen.",
+        "Sugerir skills registradas cuando el contexto encaje con una herramienta reutilizable.",
         "Abrir o enlazar el cockpit local del proyecto.",
     ]
     if profile["preferences"].get("suggest_caveman"):

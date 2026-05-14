@@ -19,6 +19,7 @@ from july.pipeline import (
     enrich_plan_with_proactive_recall,
 )
 from july.project_conversation import ProjectConversationService
+from july.skill_registry import load_skill_reference
 from july.url_fetcher import fetch_url_metadata, is_youtube_url
 
 
@@ -150,7 +151,7 @@ def build_parser() -> argparse.ArgumentParser:
         "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
         "clarification_events", "sessions", "topic_keys", "topic_links",
         "model_contributions", "url_metadata", "external_references", "projects",
-        "project_improvements",
+        "project_improvements", "skill_references",
     ])
     show.add_argument("record_id", type=int)
 
@@ -261,6 +262,26 @@ def build_parser() -> argparse.ArgumentParser:
     efl = subparsers.add_parser("external-references", help="List stored external references")
     efl.add_argument("--project", default=None)
     efl.add_argument("--limit", type=int, default=20)
+
+    # ── Skill references ─────────────────────────────────────
+    sr = subparsers.add_parser("skill-register", help="Register a local skill as a reusable July reference")
+    sr.add_argument("path", help="Path to a .skill archive, skill folder, or SKILL.md")
+    sr.add_argument("--name", default=None, help="Override the skill name")
+    sr.add_argument("--description", default=None, help="Override the skill description")
+    sr.add_argument("--trigger", default=None, help="Override trigger/search text")
+    sr.add_argument("--domain", action="append", default=[], help="Domain tag used for suggestions; repeatable")
+    sr.add_argument("--project-key", action="append", default=[], help="Optional project key to bias suggestions; repeatable")
+    sr.add_argument("--status", default="active", choices=["active", "inactive"])
+
+    srl = subparsers.add_parser("skills", help="List registered skill references")
+    srl.add_argument("--status", default="active", choices=["active", "inactive"])
+    srl.add_argument("--include-inactive", action="store_true")
+    srl.add_argument("--limit", type=int, default=20)
+
+    srs = subparsers.add_parser("skill-suggest", help="Suggest registered skills for a text or project context")
+    srs.add_argument("text", nargs="?", help="Text to evaluate. If omitted, stdin is used.")
+    srs.add_argument("--project-key", default=None)
+    srs.add_argument("--limit", type=int, default=5)
 
     return parser
 
@@ -772,6 +793,41 @@ def main(argv: list[str] | None = None) -> int:
             ))
             return 0
 
+        # ── Skill references ─────────────────────────────────
+        if args.command == "skill-register":
+            draft = load_skill_reference(args.path)
+            result = database.upsert_skill_reference(
+                skill_name=args.name or draft.skill_name,
+                display_name=args.name or draft.display_name,
+                description=args.description or draft.description,
+                source_path=draft.source_path,
+                trigger_text=args.trigger or draft.trigger_text,
+                domains=args.domain,
+                project_keys=args.project_key,
+                status=args.status,
+            )
+            print(json.dumps(result, indent=2, ensure_ascii=True))
+            return 0
+
+        if args.command == "skills":
+            print_rows(database.list_skill_references(
+                status=args.status,
+                include_inactive=args.include_inactive,
+                limit=args.limit,
+            ))
+            return 0
+
+        if args.command == "skill-suggest":
+            text = args.text if args.text is not None else sys.stdin.read().strip()
+            if not text:
+                parser.error("skill-suggest requires text or stdin input")
+            print_rows(database.suggest_skill_references(
+                text,
+                project_key=args.project_key,
+                limit=args.limit,
+            ))
+            return 0
+
     except (ValueError, LLMProviderError) as exc:
         print(str(exc))
         return 1
@@ -814,8 +870,9 @@ def print_proactive_hints(plan: dict) -> None:
     recall = plan.get("proactive_recall", {})
     memories = recall.get("related_memories", [])
     sessions = recall.get("related_sessions", [])
+    skill_suggestions = recall.get("skill_suggestions", [])
 
-    if not hints and not memories and not sessions:
+    if not hints and not memories and not sessions and not skill_suggestions:
         return
 
     print("\n--- Recuperacion proactiva ---")
@@ -833,6 +890,10 @@ def print_proactive_hints(plan: dict) -> None:
         print("  Sugerencias:")
         for hint in hints:
             print(f"    > {hint}")
+    if skill_suggestions:
+        print("  Skills sugeridas:")
+        for skill in skill_suggestions[:3]:
+            print(f"    > {skill.get('display_name', skill.get('skill_name'))}: {skill.get('reason')}")
 
 
 def maybe_enrich_capture_with_llm(llm_provider, raw_input: str, plan: dict, clarification_answer: str | None = None) -> dict:

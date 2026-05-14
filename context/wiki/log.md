@@ -74,3 +74,8 @@ tags:
 
 - Aclarado que Caveman aparecía en una conversación de Codex porque estaba instalado como skill de proyecto en `.agents/skills` de `July_unificada`, no como skill global de Codex; copiadas las skills de Caveman a `~/.codex/skills` en Mac para que futuras conversaciones de Codex puedan verlas globalmente tras reiniciar o abrir conversación nueva.
 - Añadida la skill compartida `skills/july/SKILL.md` al repo y ampliado `/july` para guardar memorias reutilizables, punteros seguros a secretos y procedimientos detectables entre conversaciones.
+
+## 2026-05-14
+
+- Refinado el contrato operativo de la suite de skills July: `/july` queda como entrada principal, `/july-inicio` como arranque normal, `/july-wizard` como onboarding read-only, `/july-comprimir` como compresión segura y los aliases `/mejoras`, `/pendiente` y `/pendientes` pasan a vivir también en `skills/` como fuente de verdad sincronizable.
+- Implementado el registro nativo de skills reutilizables en July: nueva tabla `skill_references`, comandos `skill-register`, `skills`, `skill-suggest`, herramientas MCP equivalentes y sugerencias `skill_suggestions` dentro de `proactive_recall`/`project_entry`; registrada `entrevistador-procesos` desde `planificador-procesos.skill` como referencia global para procesos, workflows y automatizaciones ambiguas.

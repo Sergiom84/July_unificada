@@ -1,70 +1,71 @@
 ---
 name: july-ayuda
-description: Muestra una chuleta rápida de comandos y herramientas disponibles para July, Caveman y skills habituales. Usar cuando Sergio invoque /july-ayuda o pregunte cómo llamar los comandos propios de July.
+description: Muestra una chuleta rápida de comandos, roles de skills y reglas de uso para July, Caveman y memoria local. Usar cuando Sergio invoque /july-ayuda o pregunte cómo usar July y sus skills dependientes.
 ---
 
 # Skill: /july-ayuda
 
-Muestra una chuleta rápida de todos los comandos y herramientas disponibles en este entorno.
-
-## Lo que debes hacer
-
-Responde con este resumen formateado. No busques nada, no llames herramientas: solo muestra esto.
+Muestra una chuleta rápida. No busques nada ni llames herramientas: solo responde con el resumen.
 
 ---
 
-## Comandos disponibles
+## July: uso recomendado
 
-### Sesión y memoria (July)
+| Comando | Cuándo usarlo |
+|---|---|
+| `/july` | Entrada principal: recuperar contexto, arrancar sesión o enrutar una acción. |
+| `/july <objetivo>` | Igual, pero registra el objetivo de trabajo. |
+| `/july-inicio` | Arranque normal de proyecto conocido o parcialmente conocido. |
+| `/july-wizard` | Onboarding read-only de proyecto nuevo o contexto insuficiente. |
+| `/july guarda <texto>` | Guardar memoria reutilizable del proyecto actual. |
+| `/july mejora <texto>` | Guardar una idea revisable, no trabajo decidido. |
+| `/july pendiente <texto>` | Guardar trabajo decidido o recordatorio operativo por cerrar. |
+| `/july pendientes` | Ver pendientes abiertos o en progreso. |
+| `/july mejoras` | Ver mejoras abiertas, planificadas o en progreso. |
+| `/july secreto <texto>` | Guardar solo puntero/procedimiento seguro, nunca el secreto. |
+| `/july registrar skill <ruta>` | Registrar una skill local para que July pueda sugerirla en otros proyectos. |
+| `/july cierra` | Guardar resumen y cerrar sesión July. |
+
+## Aliases directos
+
+Si están instalados:
+
 | Comando | Qué hace |
 |---|---|
-| `/july` | Atajo corto: arranca sesión y recupera contexto desde July |
-| `/july <objetivo>` | Igual, pero con objetivo registrado |
-| `/july-inicio` | Arranca sesión, recupera contexto del proyecto desde July |
-| `/july-inicio <objetivo>` | Igual, pero con un objetivo concreto registrado |
-| `/july-wizard` | Onboarding read-only para conectar un proyecto nuevo a July |
-| `/july guarda <texto>` | Guarda memoria reutilizable del proyecto actual |
-| `/july secreto <texto>` | Guarda solo procedimiento y puntero seguro, nunca el secreto en claro |
+| `/mejoras` | Lista o gestiona mejoras posibles del proyecto actual. |
+| `/pendiente <texto>` | Crea, actualiza o cierra un pendiente. |
+| `/pendientes` | Lista pendientes abiertos o en progreso. |
 
-### Ficheros y tokens
+## Ficheros y tokens
+
 | Comando | Qué hace |
 |---|---|
-| `/july-comprimir <fichero>` | Comprime un fichero largo con Caveman (con verificación de seguridad) |
+| `/july-comprimir <fichero>` | Comprime un fichero largo con verificación previa de seguridad. |
+| `/caveman-compress <fichero>` | Comando nativo de Caveman; úsalo solo cuando no necesites la capa segura de July. |
 
-### Ayuda
-| Comando | Qué hace |
+## Skills sugeridas por July
+
+July puede guardar referencias a skills locales y sugerirlas cuando el objetivo encaje. Ejemplo: si el trabajo empieza con "quiero crear una automatización, pero no tengo claro el proceso", July puede recordar `entrevistador-procesos` antes de construir.
+
+## Reglas de memoria
+
+| Tipo | Dónde va |
 |---|---|
-| `/july-ayuda` | Esta pantalla |
-
----
-
-## Herramientas siempre disponibles (sin comando)
-
-**July MCP** - disponible en toda conversación, invócalo por nombre:
-- "guarda esto en July"
-- "¿qué quedó pendiente en este proyecto?"
-- "abre sesión en July para indalo-padel"
-- "añade esto como mejora posible"
-
-**Caveman** - para conversaciones largas:
-- `/july-comprimir` para comprimir un fichero de procedimientos
-- `/caveman-compress` sigue siendo el comando nativo de Caveman
-- Caveman-review se activa automáticamente en revisiones de código
-
-**Otros skills de Anthropic** disponibles con `/`:
-- `/review` - revisión de pull request
-- `/init` - inicializar CLAUDE.md en un proyecto nuevo
-- `/security-review` - revisión de seguridad de cambios pendientes
-
----
+| Estado de sesión, errores resueltos, decisiones de iteración | July |
+| Mejoras posibles y pendientes | July |
+| Patrones reutilizables entre proyectos | `context/wiki/` o `docs/notion/` |
+| Secretos, tokens, claves API | Nunca en July ni en la wiki; solo punteros seguros |
 
 ## Reglas de oro
 
-1. Archivos sensibles (`.env`, claves, `context/secure/`) -> nunca a Caveman
-2. Proyecto conocido -> `/july-inicio` al empezar
-3. Conversación larga -> `/july-comprimir` el fichero de contexto más pesado
-4. Duda sobre qué hace July -> pregunta directamente, tiene 30+ herramientas MCP
+1. Proyecto conocido: usa `/july` o `/july-inicio`.
+2. Proyecto nuevo: usa `/july-wizard` y confirma onboarding read-only antes de guardar.
+3. Idea opcional: mejora.
+4. Trabajo decidido: pendiente.
+5. Criterio adoptado: memoria o decisión curada, según alcance.
+6. Conversación larga o fichero pesado: `/july-comprimir`.
+7. Si hay duda de seguridad, no guardes el contenido; guarda solo el puntero.
 
 ---
 
-*Reinicia Claude Code si un comando nuevo no aparece en el autocompletado.*
+*Si una skill nueva no aparece en autocompletado, sincroniza desde `skills/` y reinicia el selector de la herramienta.*

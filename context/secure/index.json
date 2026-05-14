@@ -1,9 +1,23 @@
-﻿[
-    {
-        "key":  "indalo-padel/mcp-tooling",
-        "key_id":  "a7256c8c3b5294fe594748bf07056d95a8c45ced648992db3a9433ec4408260c",
-        "file":  "context/secure/vault/a7256c8c3b5294fe594748bf07056d95a8c45ced648992db3a9433ec4408260c.dpapi.json",
-        "protection":  "windows-dpapi-current-user",
-        "updated_at":  "2026-05-09T21:28:02.7882213Z"
-    }
+[
+  {
+    "key": "indalo-padel/mcp-tooling",
+    "key_id": "a7256c8c3b5294fe594748bf07056d95a8c45ced648992db3a9433ec4408260c",
+    "file": "context/secure/vault/a7256c8c3b5294fe594748bf07056d95a8c45ced648992db3a9433ec4408260c.dpapi.json",
+    "protection": "windows-dpapi-current-user",
+    "updated_at": "2026-05-09T21:28:02.7882213Z"
+  },
+  {
+    "key": "lucy-lara-site/cloudflare-env-reference",
+    "key_id": "aaa5fbbb0830e32b870c3ede39c4022114d4043d89bdeca6b2cf1213a02ced86",
+    "file": "context/secure/vault/aaa5fbbb0830e32b870c3ede39c4022114d4043d89bdeca6b2cf1213a02ced86.dpapi.json",
+    "protection": "windows-dpapi-current-user",
+    "updated_at": "2026-05-11T17:55:27.0759408Z"
+  },
+  {
+    "key": "indalo-padel/render-mcp",
+    "key_id": "483aea0121e205c4bd02f8393d5aae07bf939b6cd24296f9b56b76d732430a18",
+    "file": "context/secure/vault/483aea0121e205c4bd02f8393d5aae07bf939b6cd24296f9b56b76d732430a18.dpapi.json",
+    "protection": "windows-dpapi-current-user",
+    "updated_at": "2026-05-11T18:23:06.2665488Z"
+  }
 ]

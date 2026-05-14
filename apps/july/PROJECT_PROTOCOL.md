@@ -169,6 +169,25 @@ July debe recuperar estos pendientes cuando el usuario pregunte por cosas como:
 
 Cuando un pendiente se complete, debe marcarse como `done` para que deje de aparecer como abierto. No se deben guardar secretos ni datos sensibles dentro de un pendiente.
 
+## 3.4 Skills reutilizables
+
+Cuando Sergio pida registrar una skill local para recordarla en otros proyectos, July debe guardarla como `skill_reference`.
+
+Criterio:
+
+- una `skill_reference` apunta a una herramienta o procedimiento reutilizable;
+- no sustituye a una memoria de proyecto ni a una decision estable;
+- puede ser global o sesgada por `project_key` si solo aplica a ciertos proyectos;
+- debe sugerirse solo cuando el objetivo o contexto encaje claramente.
+
+July debe recuperar estas referencias cuando el usuario pregunte o trabaje en contextos como:
+
+- "quiero crear una automatizacion, pero no tengo claro el proceso";
+- "necesito definir una skill nueva";
+- "ayudame a estructurar este workflow".
+
+La sugerencia no ejecuta la skill automaticamente. El agente debe proponerla y esperar confirmacion si cambia el modo de trabajo.
+
 ## 4. Comportamiento al cierre
 
 Antes de cerrar una iteracion, el agente debe:

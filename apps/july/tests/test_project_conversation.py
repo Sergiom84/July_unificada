@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -11,6 +12,7 @@ from july.config import LLMSettings, Settings, UISettings
 from july.db import JulyDatabase
 from july.mcp import JulyMCPServer
 from july.project_conversation import ProjectConversationService
+from july.skill_registry import load_skill_reference
 
 
 def build_test_settings(db_path: Path) -> Settings:
@@ -198,6 +200,51 @@ class ProjectConversationTests(unittest.TestCase):
         self.assertEqual(active["pendings"], [])
         self.assertEqual(all_items["pendings"][0]["status"], "done")
 
+    def test_skill_reference_can_be_registered_and_suggested(self) -> None:
+        self.database.upsert_skill_reference(
+            skill_name="entrevistador-procesos",
+            display_name="entrevistador-procesos",
+            description="Entrevista al usuario antes de crear procesos, workflows, automatizaciones o skills.",
+            trigger_text=(
+                "crear automatizar workflow proceso sistema proyecto skill definir requisitos "
+                "reglas excepciones ejemplos antes de construir"
+            ),
+            domains=["skills", "procesos", "automatizacion"],
+        )
+
+        suggestions = self.database.suggest_skill_references(
+            "Quiero crear una automatizacion pero no tengo claro el proceso ni las reglas.",
+            project_key="dashboard-av",
+        )
+        recall = self.database.proactive_recall(
+            "Necesito automatizar un workflow complejo antes de construirlo.",
+            project_key="dashboard-av",
+        )
+
+        self.assertEqual(suggestions[0]["skill_name"], "entrevistador-procesos")
+        self.assertEqual(recall["skill_suggestions"][0]["skill_name"], "entrevistador-procesos")
+
+    def test_skill_reference_loader_reads_skill_archive(self) -> None:
+        skill_path = self.root / "planificador-procesos.skill"
+        with zipfile.ZipFile(skill_path, "w") as archive:
+            archive.writestr(
+                "entrevistador-procesos/SKILL.md",
+                (
+                    "---\n"
+                    "name: entrevistador-procesos\n"
+                    "description: Entrevista al usuario para definir procesos antes de construir.\n"
+                    "---\n"
+                    "# Entrevistador de Procesos\n\n"
+                    "Usar cuando Sergio quiera crear, automatizar o documentar un proceso.\n"
+                ),
+            )
+
+        draft = load_skill_reference(skill_path)
+
+        self.assertEqual(draft.skill_name, "entrevistador-procesos")
+        self.assertIn("definir procesos", draft.description)
+        self.assertIn("automatizar", draft.trigger_text)
+
 
 class ExposureTests(unittest.TestCase):
     def test_cli_parser_includes_project_commands(self) -> None:
@@ -216,6 +263,9 @@ class ExposureTests(unittest.TestCase):
         self.assertIn("pending-status", choices)
         self.assertIn("ui", choices)
         self.assertIn("ui-link", choices)
+        self.assertIn("skill-register", choices)
+        self.assertIn("skills", choices)
+        self.assertIn("skill-suggest", choices)
 
         project_action = choices["project-action"]
         action = project_action._actions[1]  # type: ignore[attr-defined]
@@ -238,6 +288,9 @@ class ExposureTests(unittest.TestCase):
         self.assertIn("project_pending_add", server.tools)
         self.assertIn("project_pendings", server.tools)
         self.assertIn("project_pending_status", server.tools)
+        self.assertIn("skill_register", server.tools)
+        self.assertIn("skill_references", server.tools)
+        self.assertIn("skill_suggest", server.tools)
 
 
 if __name__ == "__main__":

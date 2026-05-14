@@ -135,6 +135,10 @@ Cuando July sugiera consultar una referencia externa (skills.sh, agents.md), el 
 3. Crear su propia implementacion basada en la referencia, no copiar literalmente.
 4. Si la referencia cambia arquitectura, prioridades, flujo MCP o vision, reflejar ese aprendizaje en `ROADMAP.md` y mantener `README.md` alineado.
 
+## Regla de referencias de skills
+
+Cuando July devuelva `skill_suggestions`, el agente debe mencionarlas solo si ayudan al objetivo actual. La recomendacion debe ser natural y breve; no debe ejecutar una skill ni cambiar el modo de trabajo sin que Sergio lo confirme.
+
 ## Herramientas MCP disponibles
 
 | Herramienta | Funcion |
@@ -164,5 +168,8 @@ Cuando July sugiera consultar una referencia externa (skills.sh, agents.md), el 
 | `save_model_contribution` | Registrar contribucion de un modelo IA |
 | `fetch_url` | Extraer metadatos de una URL |
 | `fetch_reference` | Consultar fuente de referencia externa |
+| `skill_register` | Registrar una skill local como referencia reutilizable |
+| `skill_references` | Listar skills registradas |
+| `skill_suggest` | Sugerir skills registradas para un texto o proyecto |
 | `proactive_recall` | Buscar proactivamente en memoria |
 | `conversation_checkpoint` | Clasificar un hallazgo como guardable, ambiguo o ignorado y persistirlo si toca |
