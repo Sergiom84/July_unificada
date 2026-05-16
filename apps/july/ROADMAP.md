@@ -120,14 +120,16 @@ Lo que ya existe hoy en el codigo:
   - `july.project_text` para utilidades de resumen de texto.
 - Extraído `july.cli_parser` para mantener la construcción del parser fuera de `july.cli` sin romper `july.cli.build_parser`.
 - Extraído `july.mcp_utils` para `ToolSpec`, validación de strings, listas y serialización de filas.
+- Extraído el dispatch de `july.cli` en familias bajo `july.cli_handlers`: runtime, memoria, proyecto, sesiones, topics, referencias y skills.
+- Extraídas las familias de schemas y handlers MCP bajo `july.mcp_tools`: memoria, proyecto, sesiones/topics, referencias/skills y herramientas de developer/arquitectura.
 - `july.db.JulyDatabase` conserva la compatibilidad pública y delega skills, sesiones, proyectos, tareas, memoria, topics, referencias y búsqueda en repositorios sin cambiar CLI ni MCP.
 
 Estado resumido:
 
-- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage`, migraciones explícitas, repositorios de skills/sesiones/proyectos/tareas/memoria/topics/referencias/búsqueda y primeros cortes de refactor en `project_conversation.py`, `cli.py` y `mcp.py`.
+- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage`, migraciones explícitas, repositorios de skills/sesiones/proyectos/tareas/memoria/topics/referencias/búsqueda y refactor modular de `project_conversation.py`, `cli.py` y `mcp.py`.
 - Documentado y validado manualmente: protocolo operativo por proyecto (`PROJECT_PROTOCOL.md`) con distincion entre proyecto nuevo, proyecto conocido, iteracion, cierre, reglas de guardado y Fase 1/Fase 2.
 - Parcial: uso de LLM para refinado de clasificacion y memoria (funcional pero requiere API key).
-- Pendiente: seguir adelgazando handlers de `cli.py` y schemas/handlers de `mcp.py`, refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
+- Pendiente: refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
 
 ## Prioridad de producto aclarada
 
@@ -165,7 +167,7 @@ Primer caso real usado para validacion manual:
 ## Siguiente bloque logico
 
 1. Continuar refactor del núcleo.
-   Continuar adelgazando `cli.py` y `mcp.py` por bloques, manteniendo fachadas compatibles y ejecutando tests tras cada paso.
+   Revisar el siguiente límite útil de extracción, probablemente perfil de developer fuera de `db.py`, manteniendo fachadas compatibles y ejecutando tests tras cada paso.
 
 2. Refinar el cockpit local por proyecto.
    Seguir mejorando densidad visual, filtros y recuperacion una vez resuelto el primer giro hacia consola de contexto memory-first y ayuda contextual.

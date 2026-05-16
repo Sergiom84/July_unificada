@@ -340,7 +340,7 @@ class ExposureTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             settings = build_test_settings(Path(temp_dir) / "july-test.db")
             with patch("july.mcp.get_settings", return_value=settings), patch(
-                "july.mcp.discover_local_skill_commands",
+                "july.mcp_tools.references_skills.discover_local_skill_commands",
                 return_value=[{"type": "local_skill_command", "skill_name": "july"}],
             ):
                 server = JulyMCPServer()

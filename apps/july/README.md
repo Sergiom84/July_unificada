@@ -190,8 +190,8 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - `july.repositories.reference_repository.ReferenceRepository` contiene contribuciones de modelos, metadatos de URLs y referencias externas.
 - `july.repositories.search_repository.SearchRepository` contiene búsqueda FTS/fallback y recuperación proactiva con sugerencias de skills.
 - `july.project_conversation` conserva la fachada de servicio y delega helpers puros en `july.project_surface`, `july.project_messages`, `july.project_checkpoints` y `july.project_text`.
-- `july.cli` mantiene la ejecución de comandos y expone `build_parser` desde `july.cli_parser`.
-- `july.mcp` mantiene el servidor y handlers, con tipos y coerciones comunes en `july.mcp_utils`.
+- `july.cli` queda como bootstrap: crea contexto, mantiene `build_parser` vía `july.cli_parser` y delega dispatch en familias bajo `july.cli_handlers`.
+- `july.mcp` queda como servidor stdio/bootstrap: las familias de schemas y handlers MCP viven bajo `july.mcp_tools` y los tipos/coerciones comunes en `july.mcp_utils`.
 - `july.db.JulyDatabase` sigue siendo la fachada pública compatible para CLI, MCP, cockpit y tests.
 
 ## Modelo operativo
