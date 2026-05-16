@@ -6,7 +6,7 @@ Regla principal: July conserva solo el índice mental y el puntero. El contenido
 
 ## Comandos
 
-Desde la raíz de `Mente_unificada`:
+Desde la raíz de `July_unificada`:
 
 ```powershell
 .\scripts\secure-memory.ps1 -Action list

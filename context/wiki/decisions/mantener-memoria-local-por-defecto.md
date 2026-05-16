@@ -2,7 +2,7 @@
 type: decision
 status: active
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-05-16
 sources:
   - docs/notion/patron-memoria-para-programar.md
 tags:
@@ -19,7 +19,7 @@ Sergio quiere que la memoria de trabajo funcione como segundo cerebro entre proy
 
 ## Decision
 
-La memoria de `Mente_unificada` y July se mantiene local-first. No se usa Notion, Google Drive, GitHub ni otro servicio externo salvo peticion explicita.
+La memoria de `July_unificada` se mantiene local-first: wiki curada en Markdown, motor July en local y base viva en `C:\Users\sergi\.july\july.db`. No se usa Notion, Google Drive, GitHub ni otro servicio externo salvo peticion explicita.
 
 ## Motivo
 

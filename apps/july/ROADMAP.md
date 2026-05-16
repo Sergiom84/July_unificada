@@ -113,11 +113,14 @@ Lo que ya existe hoy en el codigo:
 - Extraído `july.repositories.topic_repository.TopicRepository` para crear topic keys, enlazar items y recuperar contexto agrupado por tema.
 - Extraído `july.repositories.reference_repository.ReferenceRepository` para contribuciones de modelos, metadatos de URLs y referencias externas.
 - Extraído `july.repositories.search_repository.SearchRepository` para búsqueda FTS/fallback y recuperación proactiva con sugerencias de skills.
+- Extraído `july.analysis.*` desde `analyzer.py`; `july.analyzer` queda como fachada pública compatible.
 - Extraídos helpers puros de `project_conversation.py`:
   - `july.project_surface` para identidad, inspección, perfilado y análisis superficial de repos.
   - `july.project_messages` para estado conversacional, mensajes, snapshots, ayuda y pistas de copilot.
   - `july.project_checkpoints` para clasificación de checkpoints, títulos de mejoras/pendientes y patrones de topics.
   - `july.project_text` para utilidades de resumen de texto.
+- Extraídos `july.project_lifecycle` y `july.project_memory_actions` para dejar `ProjectConversationService` como fachada.
+- Extraído `july.cockpit_builders` para sugerencias, normalización de filas y timeline del cockpit.
 - Extraído `july.cli_parser` para mantener la construcción del parser fuera de `july.cli` sin romper `july.cli.build_parser`.
 - Extraído `july.mcp_utils` para `ToolSpec`, validación de strings, listas y serialización de filas.
 - Extraído el dispatch de `july.cli` en familias bajo `july.cli_handlers`: runtime, memoria, proyecto, sesiones, topics, referencias y skills.
@@ -126,7 +129,7 @@ Lo que ya existe hoy en el codigo:
 
 Estado resumido:
 
-- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage`, migraciones explícitas, repositorios de skills/sesiones/proyectos/tareas/memoria/topics/referencias/búsqueda y refactor modular de `project_conversation.py`, `cli.py` y `mcp.py`.
+- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage`, migraciones explícitas, repositorios de skills/sesiones/proyectos/tareas/memoria/topics/referencias/búsqueda y refactor modular de `analyzer.py`, `project_conversation.py`, `cockpit.py`, `cli.py` y `mcp.py`.
 - Documentado y validado manualmente: protocolo operativo por proyecto (`PROJECT_PROTOCOL.md`) con distincion entre proyecto nuevo, proyecto conocido, iteracion, cierre, reglas de guardado y Fase 1/Fase 2.
 - Parcial: uso de LLM para refinado de clasificacion y memoria (funcional pero requiere API key).
 - Pendiente: refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
@@ -167,7 +170,7 @@ Primer caso real usado para validacion manual:
 ## Siguiente bloque logico
 
 1. Continuar refactor del núcleo.
-   Revisar el siguiente límite útil de extracción, probablemente perfil de developer fuera de `db.py`, manteniendo fachadas compatibles y ejecutando tests tras cada paso.
+   Revisar el siguiente límite útil de extracción, probablemente perfil de developer fuera de `db.py` y reducción incremental de `project_memory_actions.py`, manteniendo fachadas compatibles y ejecutando tests tras cada paso.
 
 2. Refinar el cockpit local por proyecto.
    Seguir mejorando densidad visual, filtros y recuperacion una vez resuelto el primer giro hacia consola de contexto memory-first y ayuda contextual.
@@ -220,7 +223,7 @@ Lo mas valioso de Engram para July, ya absorbido en v0.2:
 
 ## Aporte de Genspark
 
-`July_Genspark.txt` plantea una vision apoyada en Engram como motor principal combinado con:
+La propuesta histórica de Genspark, consolidada en `docs/model-contributions.md`, planteaba una vision apoyada en Engram como motor principal combinado con:
 
 - Gentle AI como capa de orquestacion;
 - Obsidian como memoria personal;
@@ -245,7 +248,7 @@ Genspark se usa como referencia analizada, no como documento rector.
 
 ## Aporte de Z.AI
 
-`July_Z.AI.txt` empuja una postura pragmatica:
+La propuesta histórica de Z.AI, consolidada en `docs/model-contributions.md`, empuja una postura pragmatica:
 
 - Engram es la referencia principal y mas alineada;
 - Google Docs no debe ser el nucleo;
@@ -264,7 +267,7 @@ Z.AI se toma como referencia muy buena para el bloque de memoria.
 
 ## Aporte de GPT
 
-`July_GPT.txt` aporta una lectura amplia y cercana a la vision actual de July:
+La propuesta histórica de GPT, consolidada en `docs/model-contributions.md`, aporta una lectura amplia y cercana a la vision actual de July:
 
 - el sistema debe dividirse en captura, memoria y orquestacion;
 - no hay que guardar solo conversaciones, sino activos de conocimiento;

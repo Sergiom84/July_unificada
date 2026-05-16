@@ -17,4 +17,4 @@ Antes de actuar sobre este repositorio, Claude debe leer `AGENTS.md` y seguir su
 
 Regla práctica:
 
-July recuerda la sesión. `Mente_unificada` conserva el criterio.
+July recuerda la sesión. La wiki de `July_unificada` conserva el criterio.

@@ -189,7 +189,10 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - `july.repositories.topic_repository.TopicRepository` contiene creación de topic keys, enlaces y contexto agrupado por tema.
 - `july.repositories.reference_repository.ReferenceRepository` contiene contribuciones de modelos, metadatos de URLs y referencias externas.
 - `july.repositories.search_repository.SearchRepository` contiene búsqueda FTS/fallback y recuperación proactiva con sugerencias de skills.
+- `july.analyzer` queda como fachada pública y delega modelos, descubrimiento, arquitectura, imports, smells y recomendaciones en `july.analysis.*`.
 - `july.project_conversation` conserva la fachada de servicio y delega helpers puros en `july.project_surface`, `july.project_messages`, `july.project_checkpoints` y `july.project_text`.
+- `july.project_conversation` también delega onboarding/acciones en `july.project_lifecycle` y checkpoints/mejoras/pendientes en `july.project_memory_actions`.
+- `july.cockpit` conserva `ProjectCockpitService` y delega builders de sugerencias/timeline en `july.cockpit_builders`.
 - `july.cli` queda como bootstrap: crea contexto, mantiene `build_parser` vía `july.cli_parser` y delega dispatch en familias bajo `july.cli_handlers`.
 - `july.mcp` queda como servidor stdio/bootstrap: las familias de schemas y handlers MCP viven bajo `july.mcp_tools` y los tipos/coerciones comunes en `july.mcp_utils`.
 - `july.db.JulyDatabase` sigue siendo la fachada pública compatible para CLI, MCP, cockpit y tests.
@@ -565,8 +568,8 @@ Ejemplo de configuracion MCP por stdio (WSL / Linux / macOS):
   "mcpServers": {
     "july": {
       "command": "bash",
-      "args": ["/ruta/a/July/start-july-mcp.sh"],
-      "cwd": "/ruta/a/July"
+      "args": ["/ruta/a/July_unificada/apps/july/start-july-mcp.sh"],
+      "cwd": "/ruta/a/July_unificada/apps/july"
     }
   }
 }

@@ -2,7 +2,7 @@
 type: concept
 status: active
 created: 2026-05-09
-updated: 2026-05-09
+updated: 2026-05-16
 sources:
   - context/secure/README.md
 tags:
@@ -12,12 +12,13 @@ tags:
   - cifrado-local
 ---
 
-# Bóveda local cifrada para July y Mente_unificada
+# Bóveda local cifrada para July_unificada
 
 La memoria unificada se divide en dos capas:
 
 - **July**: recuerda el proyecto, el flujo operativo, etiquetas, punteros y decisiones no sensibles.
-- **Mente_unificada**: conserva criterio procedimental y, cuando haga falta, referencias cifradas en local.
+- **Wiki curada**: conserva criterio procedimental.
+- **Bóveda local**: guarda referencias cifradas en `context/secure/vault/` cuando haga falta.
 
 Para datos sensibles o semisensibles, la regla es:
 

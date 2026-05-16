@@ -27,7 +27,7 @@ July_unificada/
   scripts/
   skills/
   AGENTS.md
-  roadmad.md
+  roadmap.md
 ```
 
 ## Flujo esperado
@@ -38,7 +38,7 @@ July_unificada/
 4. Consulta `context/wiki/index.md` cuando necesite criterio curado.
 5. Trabaja sobre el repo real.
 6. Guarda en July avances, decisiones, mejoras posibles, pendientes, referencias de skills útiles y próximos pasos.
-7. Destila a `context/wiki/` solo lo que se vuelva patrón o decisión estable.
+7. Cada 5 sesiones cerradas, o antes si hay decisiones fuertes, ejecuta `/july-destilar` y mueve a `context/wiki/` solo lo que se vuelva patrón o decisión estable.
 
 ## Regla práctica
 

@@ -11,7 +11,7 @@ Proyecto actual:
 Antes de proponer o tocar nada:
 1. Lee las instrucciones locales del proyecto si existen: AGENTS.md, README.md, ROADMAP.md o similares.
 2. Lee la memoria compartida en:
-   C:\Users\sergi\Desktop\Aplicaciones\Mente_unificada\context\wiki\index.md
+   C:\Users\sergi\Desktop\Aplicaciones\July_unificada\context\wiki\index.md
 3. Abre las páginas relevantes de concepts, decisions y analyses.
 4. Si el trabajo es una web de cliente, aplica especialmente:
    - Web de cliente para captación
@@ -33,14 +33,14 @@ Reglas:
 - No subas nada a servicios externos.
 - No guardes secretos ni valores crudos de .env.
 - No hagas cambios de código hasta terminar el diagnóstico inicial, salvo que te pida ejecutar directamente.
-- Si aparece una decisión reutilizable, propón si debe guardarse en Mente_unificada o en July.
+- Si aparece una decisión reutilizable, propón si debe guardarse como memoria operativa en July o como criterio curado en `context/wiki/`.
 ```
 
 ## Versión corta
 
 ```text
 Arranca este proyecto usando mi memoria local.
-Lee el AGENTS/README del proyecto, después Mente_unificada/context/wiki/index.md y páginas relevantes.
+Lee el AGENTS/README del proyecto, después `July_unificada/context/wiki/index.md` y páginas relevantes.
 Si es una web de cliente, aplica los patrones de captación, fuente única de datos, SEO y formularios reales.
 Primero dame diagnóstico y siguiente paso. No subas nada ni guardes secretos.
 ```

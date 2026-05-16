@@ -14,13 +14,13 @@ Por defecto, nada se sube a Notion, Google Drive, GitHub ni servicios externos. 
 
 | Capa | Ubicacion | Funcion |
 | --- | --- | --- |
-| Memoria curada | `C:\Users\sergi\Desktop\Aplicaciones\Mente_unificada` | Procedimientos, patrones, decisiones y wiki Markdown revisable |
-| Memoria operativa | `C:\Users\sergi\Desktop\Aplicaciones\July` | Sesiones, contexto por proyecto, recall, topic keys y cockpit local |
+| Memoria curada | `C:\Users\sergi\Desktop\Aplicaciones\July_unificada\context` y `docs` | Procedimientos, patrones, decisiones y wiki Markdown revisable |
+| Memoria operativa | `C:\Users\sergi\Desktop\Aplicaciones\July_unificada\apps\july` + `C:\Users\sergi\.july\july.db` | Sesiones, contexto por proyecto, recall, topic keys y cockpit local |
 | Proyecto concreto | cada app, web o repo | Codigo real, README, AGENTS.md propio, decisiones locales |
 
-## Papel de Mente_unificada
+## Papel de la wiki curada
 
-`Mente_unificada` es el segundo cerebro curado.
+La wiki de `July_unificada` es el segundo cerebro curado.
 
 Debe guardar:
 
@@ -47,7 +47,7 @@ Debe guardar:
 - contribuciones de modelos;
 - contexto recuperable por proyecto.
 
-July no sustituye a la wiki curada. Cuando algo se vuelve estable y reutilizable, se destila hacia `Mente_unificada`.
+July no sustituye a la wiki curada. Cuando algo se vuelve estable y reutilizable, se destila hacia `context/wiki/`.
 
 ## Papel de cada proyecto
 
@@ -69,7 +69,7 @@ Plantilla minima:
 
 La memoria curada vive en:
 
-`C:\Users\sergi\Desktop\Aplicaciones\Mente_unificada`
+`C:\Users\sergi\Desktop\Aplicaciones\July_unificada`
 
 Antes de tomar decisiones tecnicas, producto o arquitectura, revisar:
 
@@ -94,7 +94,7 @@ No guardar secretos, claves ni valores crudos de `.env` en la memoria compartida
 Desde un proyecto concreto:
 
 ```powershell
-codex --cd "C:\ruta\al\proyecto" --add-dir "C:\Users\sergi\Desktop\Aplicaciones\Mente_unificada"
+codex --cd "C:\ruta\al\proyecto" --add-dir "C:\Users\sergi\Desktop\Aplicaciones\July_unificada"
 ```
 
 Esto permite a Codex trabajar en el proyecto y leer la memoria compartida.
@@ -103,7 +103,7 @@ Esto permite a Codex trabajar en el proyecto y leer la memoria compartida.
 
 1. Leer `AGENTS.md` del proyecto si existe.
 2. Leer `README.md` o documentacion base del proyecto.
-3. Leer `Mente_unificada/context/wiki/index.md`.
+3. Leer `July_unificada/context/wiki/index.md`.
 4. Abrir paginas relevantes de conceptos y decisiones.
 5. Si July esta disponible, recuperar contexto operativo del proyecto.
 6. Antes de programar, resumir:
@@ -139,11 +139,11 @@ Al terminar una sesion:
 1. Resumir que se hizo.
 2. Apuntar que queda pendiente.
 3. Guardar en July el estado operativo si se esta usando.
-4. Destilar hacia `Mente_unificada` solo las reglas o decisiones reutilizables.
-5. Actualizar `context/wiki/log.md` si se modifico la wiki.
+4. Ejecutar `/july-destilar` cada 5 sesiones cerradas o antes si hubo decisiones fuertes.
+5. Destilar hacia `context/wiki/` solo las reglas o decisiones reutilizables.
+6. Actualizar `context/wiki/log.md` si se modifico la wiki.
 
 ## Regla de oro
 
 July recuerda la sesion.  
-Mente_unificada conserva el criterio.
-
+La wiki conserva el criterio.

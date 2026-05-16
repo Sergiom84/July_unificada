@@ -108,3 +108,6 @@ tags:
 - Extraído `TopicRepository` en July para crear topic keys, enlazar items y recuperar contexto agrupado por tema; `JulyDatabase` conserva wrappers compatibles y la suite sube a 47 tests verdes.
 - Extraído `ReferenceRepository` en July para contribuciones de modelos, metadatos de URLs y referencias externas; `JulyDatabase` conserva wrappers compatibles y la suite sube a 52 tests verdes.
 - Extraído `SearchRepository` en July para búsqueda FTS/fallback y recuperación proactiva con sugerencias de skills; `JulyDatabase` conserva wrappers compatibles y la suite sube a 55 tests verdes.
+- Cerrada la migración física a raíz única: `Mente_unificada` archivada fuera de las carpetas activas, `July` original no existe ya como raíz activa y `July_unificada` queda como única carpeta operativa.
+- Añadido el ritual de destilado July a wiki: checklist en `docs/notion/checklist-destilado-july-wiki.md`, skill `/july-destilar` y concepto [[Ritual de destilado July a wiki]] para forzar el paso de hallazgos duraderos desde July hacia la wiki cada 5 sesiones.
+- Actualizadas páginas activas de memoria local para sustituir referencias operativas a `Mente_unificada` por `July_unificada` y renombrado el concepto [[Bóveda local cifrada para July_unificada]].

@@ -45,6 +45,7 @@ Keep repo-owned July wrappers with the explicit `july-` prefix so their origin i
 | `/july-inicio` | `skills/july-inicio/SKILL.md` | Start a July-backed project session and recover recent context. |
 | `/july-wizard` | `skills/july-wizard/SKILL.md` | Run read-only onboarding for a new or partial project in July. |
 | `/july-comprimir` | `skills/july-comprimir/SKILL.md` | Compress a long procedural/context file with Caveman safeguards. |
+| `/july-destilar` | `skills/july-destilar/SKILL.md` | Distill durable July findings into the curated wiki every few sessions. |
 | `/july-ayuda` | `skills/july-ayuda/SKILL.md` | Show the quick help sheet for July, Caveman, and common agent commands. |
 | `/mejoras` | `skills/mejoras/SKILL.md` | Shortcut to list or manage possible project improvements in July. |
 | `/pendiente` | `skills/pendiente/SKILL.md` | Shortcut to add or close a decided project pending item in July. |

@@ -1,4 +1,6 @@
 # July
+
+Documento histórico inicial. La dirección viva del producto está en `../README.md`, `../ROADMAP.md`, `../PROJECT_PROTOCOL.md` y `../../AGENTS.md`.
 ## Documento base del proyecto
 
 Estado: Documento maestro inicial
@@ -319,7 +321,7 @@ Estados oficiales del roadmap:
 - Eleccion de Python + SQLite.
 - Decision de memoria semiautomatica.
 - Definicion de dominios iniciales.
-- Reescritura de Punto_inicial.txt como documento maestro del proyecto.
+- Reescritura del documento inicial como documento maestro del proyecto.
 
 ### En progreso
 

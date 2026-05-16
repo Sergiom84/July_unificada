@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import tempfile
+import unittest
 from pathlib import Path
 
 from july.analyzer import (
@@ -206,3 +207,11 @@ def test_analyze_codebase_on_real_project():
         "flat", "layered_mvc", "clean_architecture", "mvc",
         "frontend_component", "script",
     )
+
+
+def load_tests(loader, tests, pattern):
+    suite = unittest.TestSuite()
+    for name, value in globals().items():
+        if name.startswith("test_") and callable(value):
+            suite.addTest(unittest.FunctionTestCase(value))
+    return suite

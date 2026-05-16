@@ -47,7 +47,7 @@ Objetivo: dejar por escrito el procedimiento antes de ejecutar la migración.
 
 Checks:
 
-- [x] `roadmad.md` existe en la raíz actual.
+- [x] `roadmap.md` existe en la raíz actual.
 - [x] El documento enumera hitos, checks y criterios de seguridad.
 - [x] El avance queda registrado en `context/wiki/log.md`.
 
@@ -86,7 +86,7 @@ July_unificada/
   AGENTS.md
   CLAUDE.md
   README.md
-  roadmad.md
+  roadmap.md
   apps/
     july/
   context/
@@ -155,7 +155,7 @@ Validación ejecutada:
 Resultado:
 
 - `stats`: July lee la BD global y devuelve contadores.
-- `tests`: 23 tests OK.
+- `tests`: suite de July OK (56 tests en la validación de cierre del 2026-05-16).
 - `project-entry`: `indalo-padel` aparece como `known`.
 
 ## Hito 6: renombrar raíz
@@ -175,15 +175,16 @@ Acciones:
 Checks:
 
 - [x] Existe `C:\Users\sergi\Desktop\Aplicaciones\July_unificada`.
-- [ ] Ya no existe la carpeta raíz antigua como carpeta activa.
+- [x] Ya no existe la carpeta raíz antigua como carpeta activa.
 - [x] `july-wizard` apunta a la nueva ruta.
 - [x] La wiki abre desde la nueva ruta.
 
 Nota de ejecución:
 
 - El renombrado directo de `Mente_unificada` a `July_unificada` fue bloqueado por Windows porque la carpeta estaba en uso.
-- Se aplicó la vía segura: crear `July_unificada` como copia activa verificada, manteniendo `Mente_unificada` intacta.
-- La retirada o renombrado final de `Mente_unificada` queda pendiente para cuando no esté abierta en IDE/sesiones.
+- Se aplicó la vía segura: crear `July_unificada` como copia activa verificada.
+- El 2026-05-16 se archivó `Mente_unificada` en `_migration_backups/archived-original-roots-20260516-2255/`.
+- La carpeta original `July` ya no existe como raíz activa en `C:\Users\sergi\Desktop\Aplicaciones`; queda respaldo histórico en `_migration_backups/July_unificada_20260509-233901/July`.
 
 ## Hito 7: cierre y verificación final
 
@@ -191,23 +192,25 @@ Objetivo: dejar constancia y confirmar que el copiloto sigue funcionando.
 
 Checks:
 
-- [x] `roadmad.md` marca la migración completada o el hito exacto donde quedó.
+- [x] `roadmap.md` marca la migración completada.
 - [x] `context/wiki/log.md` registra la migración.
 - [x] July responde a `project-entry`.
 - [x] Una conversación nueva puede usar `july-wizard` con la nueva ruta.
-- [x] La carpeta original `July` queda sin borrar hasta decidir archivarla.
+- [x] Las raíces originales quedan fuera de las carpetas activas.
 
 Estado final:
 
 - `July_unificada` queda operativa como carpeta activa.
-- `Mente_unificada` sigue existiendo por bloqueo de Windows durante el renombrado directo.
-- `July` original sigue existiendo como respaldo funcional hasta decidir archivarlo.
-- Pendiente de limpieza: retirar `Mente_unificada` y/o `July` cuando Sergio confirme que no están en uso.
+- `Mente_unificada` quedó archivada en `_migration_backups/archived-original-roots-20260516-2255/Mente_unificada`.
+- `July` original no existe como carpeta activa; su respaldo de migración está en `_migration_backups/July_unificada_20260509-233901/July`.
+- Pendiente operativo: mantener los backups, pero no usarlos como raíz activa.
 
-## Decisión pendiente
+## Decisión cerrada
 
-La carpeta original `C:\Users\sergi\Desktop\Aplicaciones\July` no debe borrarse automáticamente. Tras validar varios días `July_unificada`, se puede:
+La carpeta activa única es:
 
-1. dejarla como archivo histórico;
-2. renombrarla a `July_legacy_pre_unificacion`;
-3. eliminarla solo si hay backup y Sergio lo pide explícitamente.
+```text
+C:\Users\sergi\Desktop\Aplicaciones\July_unificada
+```
+
+Las raíces anteriores quedan como material histórico en `_migration_backups/`, no como proyectos activos.

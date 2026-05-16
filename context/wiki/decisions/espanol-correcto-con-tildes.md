@@ -2,7 +2,7 @@
 type: decision
 status: active
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-05-16
 sources:
   - AGENTS.md
   - docs/notion/prompt-arranque-proyecto.md
@@ -16,7 +16,7 @@ tags:
 
 ## Contexto
 
-La memoria de `Mente_unificada` está escrita para Sergio y se usa como base de procedimientos. Eliminar tildes por comodidad técnica reduce la calidad del contenido y transmite descuido.
+La memoria de `July_unificada` está escrita para Sergio y se usa como base de procedimientos. Eliminar tildes por comodidad técnica reduce la calidad del contenido y transmite descuido.
 
 ## Decisión
 

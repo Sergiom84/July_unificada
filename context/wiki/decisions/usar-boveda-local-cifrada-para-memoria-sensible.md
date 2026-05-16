@@ -2,7 +2,7 @@
 type: decision
 status: active
 created: 2026-05-09
-updated: 2026-05-09
+updated: 2026-05-16
 sources:
   - context/secure/README.md
 tags:
@@ -21,7 +21,7 @@ Se decide que July forme parte de la mente unificada, pero sin almacenar secreto
 Cuando haya información de acceso operativo que convenga recordar:
 
 - July guardará el nombre del proyecto, herramienta, MCP, workspace o puntero lógico.
-- `Mente_unificada` guardará contenido sensible solo en la bóveda local cifrada.
+- `July_unificada` guardará contenido sensible solo en la bóveda local cifrada, no en páginas wiki normales.
 - Las páginas wiki normales solo documentarán el procedimiento y los punteros no secretos.
 
 ## Motivo
