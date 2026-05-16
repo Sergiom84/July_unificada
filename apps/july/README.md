@@ -186,6 +186,7 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - `july.repositories.project_repository.ProjectRepository` contiene el registro canónico de proyectos, contexto agregado por proyecto y totales usados por cockpit, CLI y MCP.
 - `july.repositories.task_repository.TaskRepository` contiene mejoras posibles, pendientes y tareas manuales por proyecto.
 - `july.repositories.memory_repository.MemoryRepository` contiene inbox, tareas derivadas, memoria candidata/estable, aclaraciones y promoción de memoria.
+- `july.repositories.topic_repository.TopicRepository` contiene creación de topic keys, enlaces y contexto agrupado por tema.
 - `july.db.JulyDatabase` sigue siendo la fachada pública compatible para CLI, MCP, cockpit y tests.
 
 ## Modelo operativo

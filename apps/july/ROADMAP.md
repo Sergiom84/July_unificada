@@ -109,14 +109,15 @@ Lo que ya existe hoy en el codigo:
 - Extraído `july.repositories.project_repository.ProjectRepository` para registro canónico de proyectos, contexto agregado y totales.
 - Extraído `july.repositories.task_repository.TaskRepository` para mejoras posibles, pendientes y tareas manuales por proyecto.
 - Extraído `july.repositories.memory_repository.MemoryRepository` para lecturas de inbox/memoria, captura, resolución de aclaraciones y promoción de memoria.
-- `july.db.JulyDatabase` conserva la compatibilidad pública y delega skills, sesiones, proyectos, tareas y memoria en repositorios sin cambiar CLI ni MCP.
+- Extraído `july.repositories.topic_repository.TopicRepository` para crear topic keys, enlazar items y recuperar contexto agrupado por tema.
+- `july.db.JulyDatabase` conserva la compatibilidad pública y delega skills, sesiones, proyectos, tareas, memoria y topics en repositorios sin cambiar CLI ni MCP.
 
 Estado resumido:
 
-- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage` y repositorios de skills/sesiones/proyectos/tareas/memoria.
+- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage` y repositorios de skills/sesiones/proyectos/tareas/memoria/topics.
 - Documentado y validado manualmente: protocolo operativo por proyecto (`PROJECT_PROTOCOL.md`) con distincion entre proyecto nuevo, proyecto conocido, iteracion, cierre, reglas de guardado y Fase 1/Fase 2.
 - Parcial: uso de LLM para refinado de clasificacion y memoria (funcional pero requiere API key).
-- Pendiente: continuar el refactor por repositorios (topics, referencias y búsqueda), refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
+- Pendiente: continuar el refactor por repositorios (referencias y búsqueda), refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
 
 ## Prioridad de producto aclarada
 
@@ -154,7 +155,7 @@ Primer caso real usado para validacion manual:
 ## Siguiente bloque logico
 
 1. Continuar refactor del núcleo.
-   Extraer después topics, referencias y búsqueda, manteniendo `JulyDatabase` como fachada y ejecutando tests tras cada paso.
+   Extraer después referencias y búsqueda, manteniendo `JulyDatabase` como fachada y ejecutando tests tras cada paso.
 
 2. Refinar el cockpit local por proyecto.
    Seguir mejorando densidad visual, filtros y recuperacion una vez resuelto el primer giro hacia consola de contexto memory-first y ayuda contextual.
