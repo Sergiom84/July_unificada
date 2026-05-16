@@ -14,6 +14,7 @@ from july.repositories.session_repository import SessionRepository
 from july.repositories.skill_repository import SkillRepository
 from july.repositories.task_repository import TaskRepository
 from july.repositories.topic_repository import TopicRepository
+from july.storage.migrations import run_migrations
 from july.storage.schema import SCHEMA_SQL
 from july.storage.utils import utc_now
 
@@ -45,50 +46,7 @@ class JulyDatabase:
     def _init_db(self) -> None:
         with self.connection() as conn:
             conn.executescript(SCHEMA_SQL)
-            self._migrate_legacy_schema(conn)
-
-    def _migrate_legacy_schema(self, conn: sqlite3.Connection) -> None:
-        project_columns = conn.execute("PRAGMA table_info(projects)").fetchall()
-        project_column_names = {row["name"] for row in project_columns}
-        if "project_kind" not in project_column_names:
-            conn.execute("ALTER TABLE projects ADD COLUMN project_kind TEXT NOT NULL DEFAULT 'unknown'")
-        if "project_tags_json" not in project_column_names:
-            conn.execute("ALTER TABLE projects ADD COLUMN project_tags_json TEXT NOT NULL DEFAULT '[]'")
-        if "preferences_json" not in project_column_names:
-            conn.execute("ALTER TABLE projects ADD COLUMN preferences_json TEXT NOT NULL DEFAULT '{}'")
-
-        task_columns = conn.execute("PRAGMA table_info(tasks)").fetchall()
-        inbox_item_column = next((row for row in task_columns if row["name"] == "inbox_item_id"), None)
-        if inbox_item_column and inbox_item_column["notnull"]:
-            conn.executescript(
-                """
-                ALTER TABLE tasks RENAME TO tasks_legacy;
-
-                CREATE TABLE tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    inbox_item_id INTEGER REFERENCES inbox_items(id) ON DELETE CASCADE,
-                    task_type TEXT NOT NULL,
-                    status TEXT NOT NULL,
-                    title TEXT NOT NULL,
-                    details TEXT,
-                    project_key TEXT,
-                    due_hint TEXT,
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL
-                );
-
-                INSERT INTO tasks (
-                    id, inbox_item_id, task_type, status, title, details, project_key, due_hint,
-                    created_at, updated_at
-                )
-                SELECT
-                    id, inbox_item_id, task_type, status, title, details, project_key, due_hint,
-                    created_at, updated_at
-                FROM tasks_legacy;
-
-                DROP TABLE tasks_legacy;
-                """
-            )
+            run_migrations(conn)
 
     def capture(self, *args, **kwargs):
         return self.memory.capture(*args, **kwargs)

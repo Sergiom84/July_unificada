@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
-from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
 from july import __version__
 from july.analyzer import analyze_codebase
@@ -17,21 +16,12 @@ from july.pipeline import (
     create_capture_plan,
     enrich_plan_with_proactive_recall,
 )
+from july.mcp_utils import ToolSpec, require_string, rows_to_dicts, string_list
 from july.project_conversation import ProjectConversationService
 from july.skill_registry import discover_local_skill_commands, load_skill_reference
 from july.url_fetcher import fetch_url_metadata
 
 PROTOCOL_VERSION = "2025-03-26"
-
-
-@dataclass(slots=True)
-class ToolSpec:
-    name: str
-    title: str
-    description: str
-    input_schema: dict[str, Any]
-    handler: Callable[[dict[str, Any]], dict[str, Any]]
-
 
 class JulyMCPServer:
     def __init__(self) -> None:
@@ -1119,30 +1109,6 @@ class JulyMCPServer:
             if inbox_item is not None:
                 raw_input = inbox_item["raw_input"]
         return self.llm_provider.draft_memory(raw_input, dict(memory_item)) or {}
-
-
-def require_string(arguments: dict[str, Any], key: str) -> str:
-    value = arguments.get(key)
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"Argument '{key}' must be a non-empty string")
-    return value.strip()
-
-
-def string_list(value: Any) -> list[str]:
-    if value is None:
-        return []
-    if isinstance(value, str):
-        return [value.strip()] if value.strip() else []
-    if isinstance(value, list):
-        return [str(item).strip() for item in value if str(item).strip()]
-    return []
-
-
-def rows_to_dicts(result: dict[str, Any]) -> dict[str, Any]:
-    return {
-        section: [dict(row) for row in rows]
-        for section, rows in result.items()
-    }
 
 
 def main() -> int:

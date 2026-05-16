@@ -180,7 +180,7 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 
 - La versión instalable del paquete queda alineada con el estado documentado: `0.7.0`.
 - GitHub Actions ejecuta la suite de tests de `apps/july` en Python 3.11 para pushes y pull requests que toquen July.
-- La infraestructura SQLite empieza a separarse de `july.db`: el esquema vive en `july.storage.schema` y los helpers puros de fechas, arrays JSON y tokens de skills viven en `july.storage.utils`.
+- La infraestructura SQLite empieza a separarse de `july.db`: el esquema vive en `july.storage.schema`, las migraciones explícitas en `july.storage.migrations` y los helpers puros de fechas, arrays JSON y tokens de skills viven en `july.storage.utils`.
 - El primer repositorio por dominio es `july.repositories.skill_repository.SkillRepository`, responsable de registrar, listar y sugerir skills.
 - `july.repositories.session_repository.SessionRepository` contiene el protocolo de sesiones: inicio, resumen, cierre, contexto y sesión abierta.
 - `july.repositories.project_repository.ProjectRepository` contiene el registro canónico de proyectos, contexto agregado por proyecto y totales usados por cockpit, CLI y MCP.
@@ -189,6 +189,9 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - `july.repositories.topic_repository.TopicRepository` contiene creación de topic keys, enlaces y contexto agrupado por tema.
 - `july.repositories.reference_repository.ReferenceRepository` contiene contribuciones de modelos, metadatos de URLs y referencias externas.
 - `july.repositories.search_repository.SearchRepository` contiene búsqueda FTS/fallback y recuperación proactiva con sugerencias de skills.
+- `july.project_conversation` conserva la fachada de servicio y delega helpers puros en `july.project_surface`, `july.project_messages`, `july.project_checkpoints` y `july.project_text`.
+- `july.cli` mantiene la ejecución de comandos y expone `build_parser` desde `july.cli_parser`.
+- `july.mcp` mantiene el servidor y handlers, con tipos y coerciones comunes en `july.mcp_utils`.
 - `july.db.JulyDatabase` sigue siendo la fachada pública compatible para CLI, MCP, cockpit y tests.
 
 ## Modelo operativo

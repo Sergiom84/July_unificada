@@ -103,6 +103,7 @@ Lo que ya existe hoy en el codigo:
 - Añadido workflow `.github/workflows/july-tests.yml` para ejecutar tests automáticamente en Python 3.11.
 - Extraída la primera capa de infraestructura de persistencia:
   - `july.storage.schema` contiene `SCHEMA_SQL`.
+  - `july.storage.migrations` contiene migraciones explícitas compatibles con esquemas heredados.
   - `july.storage.utils` contiene `utc_now`, normalización/parsing de arrays JSON y tokenización de referencias de skills.
 - Extraído `july.repositories.skill_repository.SkillRepository` como primer repositorio por dominio.
 - Extraído `july.repositories.session_repository.SessionRepository` para el protocolo de sesiones.
@@ -112,14 +113,21 @@ Lo que ya existe hoy en el codigo:
 - Extraído `july.repositories.topic_repository.TopicRepository` para crear topic keys, enlazar items y recuperar contexto agrupado por tema.
 - Extraído `july.repositories.reference_repository.ReferenceRepository` para contribuciones de modelos, metadatos de URLs y referencias externas.
 - Extraído `july.repositories.search_repository.SearchRepository` para búsqueda FTS/fallback y recuperación proactiva con sugerencias de skills.
+- Extraídos helpers puros de `project_conversation.py`:
+  - `july.project_surface` para identidad, inspección, perfilado y análisis superficial de repos.
+  - `july.project_messages` para estado conversacional, mensajes, snapshots, ayuda y pistas de copilot.
+  - `july.project_checkpoints` para clasificación de checkpoints, títulos de mejoras/pendientes y patrones de topics.
+  - `july.project_text` para utilidades de resumen de texto.
+- Extraído `july.cli_parser` para mantener la construcción del parser fuera de `july.cli` sin romper `july.cli.build_parser`.
+- Extraído `july.mcp_utils` para `ToolSpec`, validación de strings, listas y serialización de filas.
 - `july.db.JulyDatabase` conserva la compatibilidad pública y delega skills, sesiones, proyectos, tareas, memoria, topics, referencias y búsqueda en repositorios sin cambiar CLI ni MCP.
 
 Estado resumido:
 
-- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage` y repositorios de skills/sesiones/proyectos/tareas/memoria/topics/referencias/búsqueda.
+- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage`, migraciones explícitas, repositorios de skills/sesiones/proyectos/tareas/memoria/topics/referencias/búsqueda y primeros cortes de refactor en `project_conversation.py`, `cli.py` y `mcp.py`.
 - Documentado y validado manualmente: protocolo operativo por proyecto (`PROJECT_PROTOCOL.md`) con distincion entre proyecto nuevo, proyecto conocido, iteracion, cierre, reglas de guardado y Fase 1/Fase 2.
 - Parcial: uso de LLM para refinado de clasificacion y memoria (funcional pero requiere API key).
-- Pendiente: añadir migraciones explícitas, refactorizar `project_conversation.py`, `cli.py` y `mcp.py`, refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
+- Pendiente: seguir adelgazando handlers de `cli.py` y schemas/handlers de `mcp.py`, refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
 
 ## Prioridad de producto aclarada
 
@@ -157,7 +165,7 @@ Primer caso real usado para validacion manual:
 ## Siguiente bloque logico
 
 1. Continuar refactor del núcleo.
-   Añadir migraciones explícitas y después refactorizar `project_conversation.py`, `cli.py` y `mcp.py`, manteniendo fachadas compatibles y ejecutando tests tras cada paso.
+   Continuar adelgazando `cli.py` y `mcp.py` por bloques, manteniendo fachadas compatibles y ejecutando tests tras cada paso.
 
 2. Refinar el cockpit local por proyecto.
    Seguir mejorando densidad visual, filtros y recuperacion una vez resuelto el primer giro hacia consola de contexto memory-first y ayuda contextual.
