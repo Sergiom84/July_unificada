@@ -96,6 +96,29 @@ class ProjectToolHandlers:
             source=arguments.get("source", "mcp"),
         )
 
+    def tool_project_distill_candidates(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        return self.project_service.distill_candidates(
+            repo_path=arguments.get("repo_path"),
+            project_key=arguments.get("project_key"),
+            threshold=int(arguments.get("threshold", 5)),
+            limit=int(arguments.get("limit", 10)),
+        )
+
+    def tool_project_distillation_record(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        pages = arguments.get("wiki_pages_changed")
+        if isinstance(pages, str):
+            wiki_pages_changed = [pages]
+        elif isinstance(pages, list):
+            wiki_pages_changed = [str(item) for item in pages if str(item).strip()]
+        else:
+            wiki_pages_changed = []
+        return self.project_service.record_distillation(
+            repo_path=arguments.get("repo_path"),
+            project_key=arguments.get("project_key"),
+            wiki_pages_changed=wiki_pages_changed,
+            notes=arguments.get("notes"),
+        )
+
 
 def build_project_tools(server) -> dict[str, ToolSpec]:
     return {
@@ -271,5 +294,35 @@ def build_project_tools(server) -> dict[str, ToolSpec]:
                 "required": ["text"],
             },
             handler=server.tool_conversation_checkpoint,
+        ),
+        "project_distill_candidates": ToolSpec(
+            name="project_distill_candidates",
+            title="Project Distill Candidates",
+            description="List durable July findings that should be distilled into the curated wiki.",
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "repo_path": {"type": "string"},
+                    "project_key": {"type": "string"},
+                    "threshold": {"type": "integer"},
+                    "limit": {"type": "integer"},
+                },
+            },
+            handler=server.tool_project_distill_candidates,
+        ),
+        "project_distillation_record": ToolSpec(
+            name="project_distillation_record",
+            title="Record Project Distillation",
+            description="Record that durable findings were distilled from July into the curated wiki.",
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "repo_path": {"type": "string"},
+                    "project_key": {"type": "string"},
+                    "wiki_pages_changed": {"type": "array", "items": {"type": "string"}},
+                    "notes": {"type": "string"},
+                },
+            },
+            handler=server.tool_project_distillation_record,
         ),
     }

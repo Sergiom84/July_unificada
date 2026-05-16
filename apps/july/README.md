@@ -176,9 +176,19 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - 44 comandos CLI.
 - 15 tablas en la base de datos.
 
+### Nuevo en v0.8
+
+- Ritual de destilado July a wiki integrado en el producto: tabla `project_distillations`, comandos `distill-candidates` y `distill-record`.
+- Nuevas herramientas MCP: `project_distill_candidates` y `project_distillation_record`.
+- `session-end` devuelve un semáforo de destilado cuando la sesión pertenece a un proyecto.
+- El cockpit muestra aviso cuando un proyecto acumula al menos 5 sesiones cerradas sin destilar o tiene decisiones/hallazgos duraderos candidatos a wiki.
+- 36 herramientas MCP expuestas.
+- 46 comandos CLI.
+- 16 tablas en la base de datos.
+
 ### Refactorización técnica iniciada
 
-- La versión instalable del paquete queda alineada con el estado documentado: `0.7.0`.
+- La versión instalable del paquete queda alineada con el estado documentado: `0.8.0`.
 - GitHub Actions ejecuta la suite de tests de `apps/july` en Python 3.11 para pushes y pull requests que toquen July.
 - La infraestructura SQLite empieza a separarse de `july.db`: el esquema vive en `july.storage.schema`, las migraciones explícitas en `july.storage.migrations` y los helpers puros de fechas, arrays JSON y tokens de skills viven en `july.storage.utils`.
 - El primer repositorio por dominio es `july.repositories.skill_repository.SkillRepository`, responsable de registrar, listar y sugerir skills.
@@ -501,6 +511,7 @@ La UI local expone una pagina por proyecto con:
 - memoria reciente y hallazgos recientes;
 - pendientes manuales;
 - mejoras posibles abiertas;
+- aviso de destilado July a wiki cuando el proyecto acumula sesiones o hallazgos duraderos;
 - sugerencias read-only;
 - acciones explicitas plegables para revisar proyecto, registrar decision, guardar hallazgo, guardar mejora, organizar pendientes y preparar la siguiente sesion.
 
@@ -510,7 +521,7 @@ Variables de configuracion UI:
 - `JULY_UI_PORT`
 - `JULY_UI_BASE_URL`
 
-Herramientas MCP expuestas actualmente (`34`):
+Herramientas MCP expuestas actualmente (`36`):
 
 - `capture_input` (con proactive recall, fetch URLs, model traceability)
 - `search_context`
@@ -521,6 +532,8 @@ Herramientas MCP expuestas actualmente (`34`):
 - `project_pending_add`
 - `project_pendings`
 - `project_pending_status`
+- `project_distill_candidates`
+- `project_distillation_record`
 - `project_entry`
 - `project_onboard`
 - `project_action`
@@ -608,6 +621,7 @@ Tablas principales:
 | `url_metadata` | Metadatos extraidos de URLs (titulo, descripcion, YouTube) |
 | `external_references` | Referencias a fuentes externas (skills.sh, agents.md) |
 | `skill_references` | Skills locales registradas para sugerencias proactivas |
+| `project_distillations` | Cortes de destilado July a wiki por proyecto |
 | `projects` | Registro canonico de proyectos para cockpit, deep links, tipo de proyecto, tags y preferencias |
 
 Indices FTS5: `inbox_items_fts`, `memory_items_fts`.

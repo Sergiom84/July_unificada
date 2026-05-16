@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from july.config import Settings
+from july.repositories.distillation_repository import DistillationRepository
 from july.repositories.memory_repository import MemoryRepository
 from july.repositories.project_repository import ProjectRepository
 from july.repositories.reference_repository import ReferenceRepository
@@ -31,6 +32,7 @@ class JulyDatabase:
         self.memory = MemoryRepository(self.connection)
         self.topics = TopicRepository(self.connection)
         self.references = ReferenceRepository(self.connection)
+        self.distillations = DistillationRepository(self.connection)
         self.searches = SearchRepository(self.connection, self.suggest_skill_references)
 
     @contextmanager
@@ -117,7 +119,11 @@ class JulyDatabase:
         return self.sessions.session_summary(*args, **kwargs)
 
     def session_end(self, *args, **kwargs):
-        return self.sessions.session_end(*args, **kwargs)
+        result = self.sessions.session_end(*args, **kwargs)
+        project_key = result.get("project_key")
+        if project_key:
+            result["distillation"] = self.distill_candidates(project_key, limit=3)
+        return result
 
     def session_context(self, *args, **kwargs):
         return self.sessions.session_context(*args, **kwargs)
@@ -127,6 +133,17 @@ class JulyDatabase:
 
     def list_sessions(self, *args, **kwargs):
         return self.sessions.list_sessions(*args, **kwargs)
+
+    # ── July -> wiki distillation ────────────────────────────────────
+
+    def distill_candidates(self, *args, **kwargs):
+        return self.distillations.distill_candidates(*args, **kwargs)
+
+    def record_distillation(self, *args, **kwargs):
+        return self.distillations.record_distillation(*args, **kwargs)
+
+    def list_distillations(self, *args, **kwargs):
+        return self.distillations.list_distillations(*args, **kwargs)
 
     # ── Topic keys ────────────────────────────────────────────────────
 
@@ -202,6 +219,7 @@ class JulyDatabase:
                 "skill_references": conn.execute("SELECT COUNT(*) FROM skill_references").fetchone()[0],
                 "projects": conn.execute("SELECT COUNT(*) FROM projects").fetchone()[0],
                 "project_improvements": conn.execute("SELECT COUNT(*) FROM project_improvements").fetchone()[0],
+                "project_distillations": conn.execute("SELECT COUNT(*) FROM project_distillations").fetchone()[0],
                 "developer_interactions": conn.execute("SELECT COUNT(*) FROM developer_interactions").fetchone()[0],
             }
 
@@ -333,7 +351,7 @@ class JulyDatabase:
                 "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
                 "clarification_events", "sessions", "topic_keys", "topic_links",
                 "model_contributions", "url_metadata", "external_references", "skill_references", "projects",
-                "project_improvements", "developer_profile", "developer_interactions",
+                "project_improvements", "project_distillations", "developer_profile", "developer_interactions",
         ):
                 rows = conn.execute(f"SELECT * FROM {table} ORDER BY id ASC").fetchall()
                 payload[table] = [dict(row) for row in rows]

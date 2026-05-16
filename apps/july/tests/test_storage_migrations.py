@@ -39,6 +39,9 @@ class StorageMigrationTests(unittest.TestCase):
             task = database.get_record("tasks", 1)
             with database.connection() as conn:
                 task_columns = {row["name"]: row for row in conn.execute("PRAGMA table_info(tasks)").fetchall()}
+                distillation_columns = {
+                    row["name"] for row in conn.execute("PRAGMA table_info(project_distillations)").fetchall()
+                }
 
             self.assertIsNotNone(project)
             self.assertEqual(project["project_kind"], "unknown")
@@ -46,6 +49,7 @@ class StorageMigrationTests(unittest.TestCase):
             self.assertEqual(project["preferences_json"], "{}")
             self.assertEqual(task["title"], "Legacy task")
             self.assertEqual(task_columns["inbox_item_id"]["notnull"], 0)
+            self.assertIn("wiki_pages_changed_json", distillation_columns)
 
 
 def create_legacy_database(db_path: Path) -> None:

@@ -82,11 +82,12 @@ class SessionRepository:
                 (timestamp, session_key),
             )
             updated = conn.execute(
-                "SELECT status, ended_at FROM sessions WHERE session_key = ?",
+                "SELECT project_key, status, ended_at FROM sessions WHERE session_key = ?",
                 (session_key,),
             ).fetchone()
         return {
             "session_key": session_key,
+            "project_key": updated["project_key"],
             "status": updated["status"],
             "ended_at": updated["ended_at"],
         }

@@ -19,18 +19,20 @@ Usar cuando Sergio invoque `/july-destilar`, pida "destilar July a wiki", cierre
 ## Flujo
 
 1. Detecta el proyecto actual con `project_entry` o el fallback CLI.
-2. Recupera `project_context`, `session_context --limit 5`, pendientes y mejoras.
-3. Lee `context/wiki/index.md`.
-4. Clasifica cada hallazgo:
+2. Consulta `project_distill_candidates` o `distill-candidates` para ver si el proyecto pide destilado.
+3. Recupera `project_context`, `session_context --limit 5`, pendientes y mejoras cuando necesites detalle adicional.
+4. Lee `context/wiki/index.md`.
+5. Clasifica cada hallazgo:
    - operativo o temporal: se queda en July;
    - decisión estable: `context/wiki/decisions/`;
    - patrón reusable: `context/wiki/concepts/`;
    - análisis o comparación: `context/wiki/analyses/`;
    - fuente reusable: `context/wiki/sources/`.
-5. Actualiza páginas existentes antes de crear nuevas.
-6. Si creas o cambias wiki, actualiza `context/wiki/index.md`.
-7. Añade entrada a `context/wiki/log.md`.
-8. Resume qué se destiló, qué quedó solo en July y qué sigue dudoso.
+6. Actualiza páginas existentes antes de crear nuevas.
+7. Si creas o cambias wiki, actualiza `context/wiki/index.md`.
+8. Añade entrada a `context/wiki/log.md`.
+9. Registra el cierre con `project_distillation_record` o `distill-record`.
+10. Resume qué se destiló, qué quedó solo en July y qué sigue dudoso.
 
 ## Checklist base
 
@@ -42,9 +44,10 @@ Desde `C:\Users\sergi\Desktop\Aplicaciones\July_unificada`:
 
 ```powershell
 .\scripts\july.ps1 project-entry --repo-path <repo>
+.\scripts\july.ps1 distill-candidates --repo-path <repo>
 .\scripts\july.ps1 project-context <project-key>
 .\scripts\july.ps1 session-context --project <project-key> --limit 5
 .\scripts\july.ps1 pendings --repo-path <repo>
 .\scripts\july.ps1 improvements --repo-path <repo>
+.\scripts\july.ps1 distill-record --repo-path <repo> --wiki-page "context/wiki/concepts/ejemplo.md" --notes "Destilado aplicado"
 ```
-

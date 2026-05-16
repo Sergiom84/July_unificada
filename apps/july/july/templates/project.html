@@ -66,6 +66,27 @@
     </div>
   </section>
 
+  {% if cockpit.distillation.needs_distillation %}
+    <section class="panel alt" style="margin-top: 18px;">
+      <div class="section-title">Destilado pendiente</div>
+      <div class="item">
+        <div class="item-header">
+          <div>
+            <strong>{{ cockpit.distillation.sessions_since_last }} sesiones desde el último destilado</strong>
+            <div class="small">{{ cockpit.distillation.reasons | join("; ") }}</div>
+          </div>
+          <span class="badge">/july-destilar</span>
+        </div>
+        <div class="meta" style="margin-top: 10px;">
+          <span class="pill">{{ cockpit.distillation.candidate_counts.decisions }} decisiones</span>
+          <span class="pill">{{ cockpit.distillation.candidate_counts.workflows }} flujos</span>
+          <span class="pill">{{ cockpit.distillation.candidate_counts.resolved_errors }} errores</span>
+          <span class="pill">{{ cockpit.distillation.candidate_counts.patterns }} patrones</span>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
   <div class="grid layout" style="margin-top: 18px;">
     <div class="stack">
       <section class="panel">

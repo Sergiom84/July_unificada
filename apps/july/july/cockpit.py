@@ -109,6 +109,7 @@ class ProjectCockpitService:
         totals = self.database.get_project_totals(project["project_key"])
         sessions = self.database.session_context(project_key=project["project_key"], limit=limit)
         active_session = self.database.get_open_session(project["project_key"])
+        distillation = self.database.distill_candidates(project["project_key"], limit=5)
         recent_memory = project_context["memory"]
         recent_inbox = project_context["inbox"]
         recent_findings = [
@@ -130,6 +131,7 @@ class ProjectCockpitService:
             pending_improvements=pending_improvements,
             recent_memory=recent_memory,
             sessions=sessions,
+            distillation=distillation,
         )
 
         return {
@@ -145,6 +147,7 @@ class ProjectCockpitService:
             "recent_findings": recent_findings,
             "pending_tasks": pending_tasks,
             "pending_improvements": pending_improvements,
+            "distillation": distillation,
             "suggestions": suggestions,
             "activity_feed": build_activity_feed(
                 memory_items=recent_memory,

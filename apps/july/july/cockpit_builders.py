@@ -11,6 +11,7 @@ def build_best_practice_suggestions(
     pending_improvements: list[dict[str, Any]],
     recent_memory: list[dict[str, Any]],
     sessions: list[dict[str, Any]],
+    distillation: dict[str, Any] | None = None,
 ) -> list[dict[str, str]]:
     suggestions: list[dict[str, str]] = []
     state = entry["project_state"]
@@ -72,6 +73,15 @@ def build_best_practice_suggestions(
                 "title": "Revisa mejoras pendientes",
                 "detail": f"Hay {len(pending_improvements)} ideas de mejora abiertas. Conviene convertir las utiles en tareas o descartarlas.",
                 "action_hint": "improvement_review",
+            }
+        )
+
+    if distillation and distillation.get("needs_distillation"):
+        suggestions.append(
+            {
+                "title": "Destila hallazgos a la wiki",
+                "detail": "; ".join(distillation.get("reasons", [])) or "El proyecto tiene candidatos duraderos para la wiki.",
+                "action_hint": "july-destilar",
             }
         )
 
@@ -183,4 +193,3 @@ def build_activity_feed(
 
     events.sort(key=lambda item: item["timestamp"] or "", reverse=True)
     return events[:12]
-

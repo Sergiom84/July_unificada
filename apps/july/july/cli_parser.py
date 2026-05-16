@@ -122,6 +122,18 @@ def build_parser() -> argparse.ArgumentParser:
     pending_status.add_argument("--repo-path", default=None, help="Path to the repo to inspect")
     pending_status.add_argument("--project-key", default=None, help="Optional canonical project key override")
 
+    distill_candidates = subparsers.add_parser("distill-candidates", help="List July findings that should be distilled into the wiki")
+    distill_candidates.add_argument("--repo-path", default=None, help="Path to the repo to inspect")
+    distill_candidates.add_argument("--project-key", default=None, help="Optional canonical project key override")
+    distill_candidates.add_argument("--threshold", type=int, default=5, help="Closed sessions needed before the project asks for distillation")
+    distill_candidates.add_argument("--limit", type=int, default=10)
+
+    distill_record = subparsers.add_parser("distill-record", help="Record that a project was distilled into the wiki")
+    distill_record.add_argument("--repo-path", default=None, help="Path to the repo to inspect")
+    distill_record.add_argument("--project-key", default=None, help="Optional canonical project key override")
+    distill_record.add_argument("--wiki-page", action="append", default=[], help="Wiki page changed; repeatable")
+    distill_record.add_argument("--notes", default=None)
+
     search = subparsers.add_parser("search", help="Search inbox, tasks, and memory")
     search.add_argument("query")
     search.add_argument("--limit", type=int, default=10)
@@ -131,7 +143,7 @@ def build_parser() -> argparse.ArgumentParser:
         "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
         "clarification_events", "sessions", "topic_keys", "topic_links",
         "model_contributions", "url_metadata", "external_references", "projects",
-        "project_improvements", "skill_references",
+        "project_improvements", "project_distillations", "skill_references",
     ])
     show.add_argument("record_id", type=int)
 

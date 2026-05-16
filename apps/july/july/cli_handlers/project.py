@@ -128,6 +128,28 @@ def handle_pending_status(ctx: CLIContext) -> int:
     return 0
 
 
+def handle_distill_candidates(ctx: CLIContext) -> int:
+    result = ctx.project_service.distill_candidates(
+        repo_path=ctx.args.repo_path,
+        project_key=ctx.args.project_key,
+        threshold=ctx.args.threshold,
+        limit=ctx.args.limit,
+    )
+    print(json.dumps(result, indent=2, ensure_ascii=True))
+    return 0
+
+
+def handle_distill_record(ctx: CLIContext) -> int:
+    result = ctx.project_service.record_distillation(
+        repo_path=ctx.args.repo_path,
+        project_key=ctx.args.project_key,
+        wiki_pages_changed=ctx.args.wiki_page,
+        notes=ctx.args.notes,
+    )
+    print(json.dumps(result, indent=2, ensure_ascii=True))
+    return 0
+
+
 PROJECT_HANDLERS = {
     "project-entry": handle_project_entry,
     "project-onboard": handle_project_onboard,
@@ -139,4 +161,6 @@ PROJECT_HANDLERS = {
     "pending-add": handle_pending_add,
     "pendings": handle_pendings,
     "pending-status": handle_pending_status,
+    "distill-candidates": handle_distill_candidates,
+    "distill-record": handle_distill_record,
 }

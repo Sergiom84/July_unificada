@@ -37,3 +37,4 @@ La wiki no debe guardar todo lo que ocurre. Debe guardar lo que evita repetir cr
 
 El procedimiento operativo vive en [Checklist: destilado July a wiki](../../../docs/notion/checklist-destilado-july-wiki.md) y la skill ejecutable es `/july-destilar`.
 
+July expone el semáforo operativo con `distill-candidates` y registra el último corte aplicado con `distill-record`. El cockpit muestra aviso cuando el proyecto supera el umbral de sesiones o tiene candidatos duraderos.

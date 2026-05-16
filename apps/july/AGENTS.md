@@ -152,6 +152,8 @@ Cuando July devuelva `skill_suggestions`, el agente debe mencionarlas solo si ay
 | `project_pending_add` | Guardar un pendiente o tema por hacer para un proyecto |
 | `project_pendings` | Listar pendientes abiertos o historicos de un proyecto |
 | `project_pending_status` | Cambiar el estado de un pendiente y cerrarlo como `done` |
+| `project_distill_candidates` | Listar hallazgos de July que piden destilado hacia la wiki |
+| `project_distillation_record` | Registrar que un proyecto ya fue destilado hacia la wiki |
 | `project_entry` | Detectar si un proyecto es nuevo, parcial o conocido y devolver el primer mensaje conversacional |
 | `project_onboard` | Leer el repo en modo read-only y guardar una primera foto util del proyecto |
 | `project_action` | Ejecutar la respuesta del wizard conversacional del proyecto |

@@ -97,9 +97,21 @@ Lo que ya existe hoy en el codigo:
 - 15 tablas en la base de datos.
 - Tests ampliados para registro, lectura de `.skill`, sugerencias, CLI y MCP.
 
+### Bloque v0.8 (implementado)
+
+- Ritual de destilado July a wiki integrado en el producto.
+- Nueva tabla `project_distillations` para registrar el último corte de destilado por proyecto.
+- Nuevos comandos CLI: `distill-candidates` y `distill-record`.
+- Nuevas herramientas MCP: `project_distill_candidates` y `project_distillation_record`.
+- `session-end` devuelve un semáforo de destilado cuando la sesión pertenece a un proyecto.
+- El cockpit muestra aviso cuando un proyecto acumula al menos 5 sesiones cerradas sin destilar o tiene decisiones/hallazgos duraderos candidatos a wiki.
+- 36 herramientas MCP expuestas.
+- 46 comandos CLI.
+- 16 tablas en la base de datos.
+
 ### Refactor de núcleo iniciado (2026-05-16)
 
-- Versión de paquete alineada a `0.7.0` en `pyproject.toml` y `july.__version__`.
+- Versión de paquete alineada a `0.8.0` en `pyproject.toml` y `july.__version__`.
 - Añadido workflow `.github/workflows/july-tests.yml` para ejecutar tests automáticamente en Python 3.11.
 - Extraída la primera capa de infraestructura de persistencia:
   - `july.storage.schema` contiene `SCHEMA_SQL`.

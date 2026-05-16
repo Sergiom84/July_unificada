@@ -18,6 +18,7 @@ July guarda estado operativo. La wiki guarda criterio curado.
 ## Checklist
 
 1. Recuperar contexto operativo:
+   - `distill-candidates`;
    - `project_context`;
    - `session_context` con al menos las últimas 5 sesiones;
    - pendientes y mejoras abiertas si afectan a decisiones futuras.
@@ -33,11 +34,11 @@ July guarda estado operativo. La wiki guarda criterio curado.
 6. Añadir wikilinks con formato `[[Nombre de página]]`.
 7. Actualizar `context/wiki/index.md`.
 8. Añadir entrada fechada en `context/wiki/log.md`.
-9. Si algo queda dudoso, dejarlo como candidato en July, no inflar la wiki.
+9. Registrar el cierre con `distill-record`.
+10. Si algo queda dudoso, dejarlo como candidato en July, no inflar la wiki.
 
 ## Criterio de calidad
 
 Una destilación buena permite que otro agente retome el criterio sin leer todo el historial de sesiones.
 
 Una destilación mala copia ruido, logs o tareas efímeras.
-

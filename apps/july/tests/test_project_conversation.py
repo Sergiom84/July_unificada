@@ -200,6 +200,26 @@ class ProjectConversationTests(unittest.TestCase):
         self.assertEqual(active["pendings"], [])
         self.assertEqual(all_items["pendings"][0]["status"], "done")
 
+    def test_distillation_flow_resolves_project_from_repo_path(self) -> None:
+        for i in range(5):
+            session_key = f"dashboard-distill-{i}"
+            self.database.session_start(session_key, project_key="dashboard-av")
+            self.database.session_summary(session_key, summary=f"Resumen {i}")
+            self.database.session_end(session_key)
+
+        candidates = self.service.distill_candidates(repo_path=str(self.repo_root), threshold=5)
+        record = self.service.record_distillation(
+            repo_path=str(self.repo_root),
+            wiki_pages_changed=["context/wiki/concepts/dashboard-av.md"],
+            notes="Destilado desde service",
+        )
+        after = self.service.distill_candidates(repo_path=str(self.repo_root), threshold=5)
+
+        self.assertEqual(candidates["project_key"], "dashboard-av")
+        self.assertTrue(candidates["needs_distillation"])
+        self.assertEqual(record["session_count"], 5)
+        self.assertFalse(after["needs_distillation"])
+
     def test_skill_reference_can_be_registered_and_suggested(self) -> None:
         self.database.upsert_skill_reference(
             skill_name="entrevistador-procesos",
@@ -305,6 +325,8 @@ class ExposureTests(unittest.TestCase):
         self.assertIn("pending-add", choices)
         self.assertIn("pendings", choices)
         self.assertIn("pending-status", choices)
+        self.assertIn("distill-candidates", choices)
+        self.assertIn("distill-record", choices)
         self.assertIn("ui", choices)
         self.assertIn("ui-link", choices)
         self.assertIn("skill-register", choices)
@@ -332,6 +354,8 @@ class ExposureTests(unittest.TestCase):
         self.assertIn("project_pending_add", server.tools)
         self.assertIn("project_pendings", server.tools)
         self.assertIn("project_pending_status", server.tools)
+        self.assertIn("project_distill_candidates", server.tools)
+        self.assertIn("project_distillation_record", server.tools)
         self.assertIn("skill_register", server.tools)
         self.assertIn("skill_references", server.tools)
         self.assertIn("skill_suggest", server.tools)

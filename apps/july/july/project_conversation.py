@@ -286,6 +286,42 @@ class ProjectConversationService:
             project_key=project_key,
         )
 
+    def distill_candidates(
+        self,
+        *,
+        repo_path: str | None = None,
+        project_key: str | None = None,
+        threshold: int = 5,
+        limit: int = 10,
+    ) -> dict[str, Any]:
+        repo_root, resolved_project_key = resolve_project_identity(self.database, repo_path=repo_path, project_key=project_key)
+        self.database.upsert_project(
+            resolved_project_key,
+            str(repo_root),
+            repo_name=repo_root.name,
+        )
+        return self.database.distill_candidates(resolved_project_key, threshold=threshold, limit=limit)
+
+    def record_distillation(
+        self,
+        *,
+        repo_path: str | None = None,
+        project_key: str | None = None,
+        wiki_pages_changed: list[str] | None = None,
+        notes: str | None = None,
+    ) -> dict[str, Any]:
+        repo_root, resolved_project_key = resolve_project_identity(self.database, repo_path=repo_path, project_key=project_key)
+        self.database.upsert_project(
+            resolved_project_key,
+            str(repo_root),
+            repo_name=repo_root.name,
+        )
+        return self.database.record_distillation(
+            resolved_project_key,
+            wiki_pages_changed=wiki_pages_changed,
+            notes=notes,
+        )
+
     def _store_checkpoint(self, text: str, project_key: str, kind: str, source: str) -> dict[str, Any]:
         return self.memory_actions.store_checkpoint(text, project_key, kind, source)
 

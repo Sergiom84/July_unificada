@@ -7,6 +7,7 @@ def run_migrations(conn: sqlite3.Connection) -> None:
     """Apply compatibility migrations for databases created by older July versions."""
     migrate_projects_profile_columns(conn)
     migrate_nullable_task_inbox_item(conn)
+    migrate_project_distillations(conn)
 
 
 def migrate_projects_profile_columns(conn: sqlite3.Connection) -> None:
@@ -52,6 +53,27 @@ def migrate_nullable_task_inbox_item(conn: sqlite3.Connection) -> None:
         FROM tasks_legacy;
 
         DROP TABLE tasks_legacy;
+        """
+    )
+
+
+def migrate_project_distillations(conn: sqlite3.Connection) -> None:
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS project_distillations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_key TEXT NOT NULL,
+            from_session_id INTEGER,
+            to_session_id INTEGER,
+            session_count INTEGER NOT NULL DEFAULT 0,
+            wiki_pages_changed_json TEXT NOT NULL DEFAULT '[]',
+            notes TEXT,
+            distilled_at TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_project_distillations_project_session
+        ON project_distillations(project_key, to_session_id, distilled_at);
         """
     )
 
