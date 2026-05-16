@@ -89,6 +89,7 @@ Lo que ya existe hoy en el codigo:
 - Parser de `.skill`, carpetas de skill y `SKILL.md` para extraer `name`, `description` y texto de activacion.
 - Nuevos comandos CLI: `skill-register`, `skills` y `skill-suggest`.
 - Nuevas herramientas MCP: `skill_register`, `skill_references` y `skill_suggest`.
+- `skills` separa referencias reutilizables sugeribles y comandos locales de memoria (`skills/`) para dar visibilidad sin contaminar `skill-suggest`.
 - `proactive_recall` incorpora `skill_suggestions`; `project_entry` las hereda dentro de `related_context`.
 - Registrada como referencia global la skill `entrevistador-procesos` desde `C:\Users\sergi\Documents\Skills\planificador-procesos.skill`.
 - 34 herramientas MCP expuestas.

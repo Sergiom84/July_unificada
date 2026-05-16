@@ -19,7 +19,7 @@ from july.pipeline import (
     enrich_plan_with_proactive_recall,
 )
 from july.project_conversation import ProjectConversationService
-from july.skill_registry import load_skill_reference
+from july.skill_registry import discover_local_skill_commands, load_skill_reference
 from july.url_fetcher import fetch_url_metadata, is_youtube_url
 
 
@@ -273,9 +273,10 @@ def build_parser() -> argparse.ArgumentParser:
     sr.add_argument("--project-key", action="append", default=[], help="Optional project key to bias suggestions; repeatable")
     sr.add_argument("--status", default="active", choices=["active", "inactive"])
 
-    srl = subparsers.add_parser("skills", help="List registered skill references")
+    srl = subparsers.add_parser("skills", help="List registered skill references and local July commands")
     srl.add_argument("--status", default="active", choices=["active", "inactive"])
     srl.add_argument("--include-inactive", action="store_true")
+    srl.add_argument("--registered-only", action="store_true", help="Only show reusable skills registered in July")
     srl.add_argument("--limit", type=int, default=20)
 
     srs = subparsers.add_parser("skill-suggest", help="Suggest registered skills for a text or project context")
@@ -810,11 +811,13 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         if args.command == "skills":
-            print_rows(database.list_skill_references(
+            registered = database.list_skill_references(
                 status=args.status,
                 include_inactive=args.include_inactive,
                 limit=args.limit,
-            ))
+            )
+            local_commands = [] if args.registered_only else discover_local_skill_commands(limit=args.limit)
+            print_skill_catalog(registered, local_commands)
             return 0
 
         if args.command == "skill-suggest":
@@ -841,6 +844,15 @@ def print_rows(rows) -> None:
         return
     for row in rows:
         print(json.dumps(dict(row), ensure_ascii=True))
+
+
+def print_skill_catalog(registered, local_commands) -> None:
+    print("--- Skills de trabajo reutilizable ---")
+    print_rows(registered)
+    if local_commands:
+        print()
+        print("--- Comandos July / memoria operativa ---")
+        print_rows(local_commands)
 
 
 def print_capture_result(plan: dict, result: dict) -> None:

@@ -444,8 +444,11 @@ July debe resolver el proyecto activo, guardar el pendiente como `pending` y rec
 # Pedir sugerencias contra un objetivo o contexto de trabajo
 .\scripts\july.ps1 skill-suggest "Quiero crear una automatizacion pero no tengo claro el proceso" --project-key indalo-padel
 
-# Ver skills registradas
+# Ver skills registradas y comandos locales de memoria
 .\scripts\july.ps1 skills
+
+# Ver solo skills reutilizables sugeribles
+.\scripts\july.ps1 skills --registered-only
 ```
 
 Uso conversacional esperado:
@@ -668,6 +671,11 @@ Estas sugerencias son puntos de referencia. July toma la idea, la revisa, y crea
 ## Skills registradas como punto de apoyo
 
 July tambien puede registrar skills locales existentes para sugerirlas mas adelante. Estas referencias no ejecutan nada por si solas: solo permiten que `proactive_recall`, `project_entry` o `skill-suggest` recuerden que una herramienta puede ayudar.
+
+El comando `skills` separa dos categorias:
+
+- **Skills de trabajo reutilizable**: referencias registradas en `skill_references`, sugeribles por `skill-suggest` entre proyectos.
+- **Comandos July / memoria operativa**: wrappers locales de `skills/` como `july`, `july-inicio`, `mejoras` o `pendientes`. Se listan para visibilidad, pero no contaminan el ranking de `skill-suggest`.
 
 Ejemplos ya validados:
 

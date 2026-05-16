@@ -12,7 +12,7 @@ from july.config import LLMSettings, Settings, UISettings
 from july.db import JulyDatabase
 from july.mcp import JulyMCPServer
 from july.project_conversation import ProjectConversationService
-from july.skill_registry import load_skill_reference
+from july.skill_registry import discover_local_skill_commands, load_skill_reference
 
 
 def build_test_settings(db_path: Path) -> Settings:
@@ -268,6 +268,27 @@ class ProjectConversationTests(unittest.TestCase):
         self.assertIn("presentaciones visuales modernas", draft.description)
         self.assertIn("convertir contenido en slides", draft.description)
 
+    def test_local_skill_commands_are_discovered_separately(self) -> None:
+        skills_root = self.root / "skills"
+        command_dir = skills_root / "july"
+        command_dir.mkdir(parents=True)
+        (command_dir / "SKILL.md").write_text(
+            (
+                "---\n"
+                "name: july\n"
+                "description: Atajo principal para usar July como memoria local de proyecto.\n"
+                "---\n"
+                "# July\n"
+            ),
+            encoding="utf-8",
+        )
+
+        commands = discover_local_skill_commands(skills_root)
+
+        self.assertEqual(commands[0]["type"], "local_skill_command")
+        self.assertEqual(commands[0]["category"], "july_memory_command")
+        self.assertEqual(commands[0]["skill_name"], "july")
+
 
 class ExposureTests(unittest.TestCase):
     def test_cli_parser_includes_project_commands(self) -> None:
@@ -314,6 +335,19 @@ class ExposureTests(unittest.TestCase):
         self.assertIn("skill_register", server.tools)
         self.assertIn("skill_references", server.tools)
         self.assertIn("skill_suggest", server.tools)
+
+    def test_mcp_skill_references_separates_local_commands(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            settings = build_test_settings(Path(temp_dir) / "july-test.db")
+            with patch("july.mcp.get_settings", return_value=settings), patch(
+                "july.mcp.discover_local_skill_commands",
+                return_value=[{"type": "local_skill_command", "skill_name": "july"}],
+            ):
+                server = JulyMCPServer()
+                result = server.tool_skill_references({})
+
+        self.assertIn("skills", result)
+        self.assertEqual(result["local_commands"][0]["skill_name"], "july")
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ from july.pipeline import (
     enrich_plan_with_proactive_recall,
 )
 from july.project_conversation import ProjectConversationService
-from july.skill_registry import load_skill_reference
+from july.skill_registry import discover_local_skill_commands, load_skill_reference
 from july.url_fetcher import fetch_url_metadata
 
 PROTOCOL_VERSION = "2025-03-26"
@@ -486,12 +486,13 @@ class JulyMCPServer:
             "skill_references": ToolSpec(
                 name="skill_references",
                 title="Skill References",
-                description="List registered skills that July can suggest proactively.",
+                description="List registered skills that July can suggest proactively, plus local July memory commands.",
                 input_schema={
                     "type": "object",
                     "properties": {
                         "status": {"type": "string", "enum": ["active", "inactive"]},
                         "include_inactive": {"type": "boolean"},
+                        "include_local_commands": {"type": "boolean"},
                         "limit": {"type": "integer"},
                     },
                 },
@@ -997,6 +998,7 @@ class JulyMCPServer:
 
     def tool_skill_references(self, arguments: dict[str, Any]) -> dict[str, Any]:
         limit = int(arguments.get("limit", 20))
+        include_local = bool(arguments.get("include_local_commands", True))
         return {
             "skills": [
                 dict(row) for row in self.database.list_skill_references(
@@ -1004,7 +1006,8 @@ class JulyMCPServer:
                     include_inactive=bool(arguments.get("include_inactive", False)),
                     limit=limit,
                 )
-            ]
+            ],
+            "local_commands": discover_local_skill_commands(limit=limit) if include_local else [],
         }
 
     def tool_skill_suggest(self, arguments: dict[str, Any]) -> dict[str, Any]:

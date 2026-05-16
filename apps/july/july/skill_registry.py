@@ -18,6 +18,16 @@ class SkillReferenceDraft:
     trigger_text: str
 
 
+@dataclass(slots=True)
+class LocalSkillCommand:
+    type: str
+    category: str
+    skill_name: str
+    display_name: str
+    description: str
+    source_path: str
+
+
 def load_skill_reference(path: str | Path) -> SkillReferenceDraft:
     source = Path(path).expanduser()
     if not source.exists():
@@ -37,6 +47,41 @@ def load_skill_reference(path: str | Path) -> SkillReferenceDraft:
         source_path=str(source),
         trigger_text=build_trigger_text(description, body),
     )
+
+
+def discover_local_skill_commands(skills_root: str | Path | None = None, limit: int = 50) -> list[dict[str, str]]:
+    root = Path(skills_root).expanduser() if skills_root else _default_repo_skills_root()
+    if not root.exists():
+        return []
+
+    commands: list[dict[str, str]] = []
+    for skill_dir in sorted(path for path in root.iterdir() if path.is_dir()):
+        skill_file = skill_dir / "SKILL.md"
+        if not skill_file.exists():
+            continue
+        try:
+            draft = load_skill_reference(skill_dir)
+        except ValueError:
+            continue
+        command = LocalSkillCommand(
+            type="local_skill_command",
+            category="july_memory_command",
+            skill_name=draft.skill_name,
+            display_name=draft.display_name,
+            description=draft.description,
+            source_path=draft.source_path,
+        )
+        commands.append({
+            "type": command.type,
+            "category": command.category,
+            "skill_name": command.skill_name,
+            "display_name": command.display_name,
+            "description": command.description,
+            "source_path": command.source_path,
+        })
+        if len(commands) >= limit:
+            break
+    return commands
 
 
 def build_trigger_text(description: str, body: str) -> str:
@@ -111,3 +156,7 @@ def _split_frontmatter(text: str) -> tuple[dict[str, str], str]:
         index += 1
 
     return metadata, text[match.end():]
+
+
+def _default_repo_skills_root() -> Path:
+    return Path(__file__).resolve().parents[3] / "skills"
