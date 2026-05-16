@@ -188,6 +188,7 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - `july.repositories.memory_repository.MemoryRepository` contiene inbox, tareas derivadas, memoria candidata/estable, aclaraciones y promoción de memoria.
 - `july.repositories.topic_repository.TopicRepository` contiene creación de topic keys, enlaces y contexto agrupado por tema.
 - `july.repositories.reference_repository.ReferenceRepository` contiene contribuciones de modelos, metadatos de URLs y referencias externas.
+- `july.repositories.search_repository.SearchRepository` contiene búsqueda FTS/fallback y recuperación proactiva con sugerencias de skills.
 - `july.db.JulyDatabase` sigue siendo la fachada pública compatible para CLI, MCP, cockpit y tests.
 
 ## Modelo operativo

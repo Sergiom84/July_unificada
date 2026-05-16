@@ -9,6 +9,7 @@ from july.config import Settings
 from july.repositories.memory_repository import MemoryRepository
 from july.repositories.project_repository import ProjectRepository
 from july.repositories.reference_repository import ReferenceRepository
+from july.repositories.search_repository import SearchRepository
 from july.repositories.session_repository import SessionRepository
 from july.repositories.skill_repository import SkillRepository
 from july.repositories.task_repository import TaskRepository
@@ -29,6 +30,7 @@ class JulyDatabase:
         self.memory = MemoryRepository(self.connection)
         self.topics = TopicRepository(self.connection)
         self.references = ReferenceRepository(self.connection)
+        self.searches = SearchRepository(self.connection, self.suggest_skill_references)
 
     @contextmanager
     def connection(self):
@@ -142,78 +144,8 @@ class JulyDatabase:
     def list_memory(self, *args, **kwargs):
         return self.memory.list_memory(*args, **kwargs)
 
-    def search(self, query: str, limit: int = 10) -> dict[str, list[sqlite3.Row]]:
-        with self.connection() as conn:
-            try:
-                inbox_rows = conn.execute(
-                    """
-                    SELECT inbox_items.id, inbox_items.detected_intent, inbox_items.status,
-                           inbox_items.domain, inbox_items.project_key, inbox_items.normalized_summary
-                    FROM inbox_items_fts
-                    JOIN inbox_items ON inbox_items_fts.rowid = inbox_items.id
-                    WHERE inbox_items_fts MATCH ?
-                    ORDER BY inbox_items.id DESC
-                    LIMIT ?
-                    """,
-                    (query, limit),
-                ).fetchall()
-
-                memory_rows = conn.execute(
-                    """
-                    SELECT memory_items.id, memory_items.memory_kind, memory_items.status,
-                           memory_items.domain, memory_items.scope, memory_items.project_key, memory_items.title
-                    FROM memory_items_fts
-                    JOIN memory_items ON memory_items_fts.rowid = memory_items.id
-                    WHERE memory_items_fts MATCH ?
-                    ORDER BY memory_items.id DESC
-                    LIMIT ?
-                    """,
-                    (query, limit),
-                ).fetchall()
-            except sqlite3.OperationalError:
-                inbox_rows = conn.execute(
-                    """
-                    SELECT id, detected_intent, status, domain, project_key, normalized_summary
-                    FROM inbox_items
-                    WHERE raw_input LIKE ? OR normalized_summary LIKE ?
-                    ORDER BY id DESC
-                    LIMIT ?
-                    """,
-                    (f"%{query}%", f"%{query}%", limit),
-                ).fetchall()
-                memory_rows = conn.execute(
-                    """
-                    SELECT id, memory_kind, status, domain, scope, project_key, title
-                    FROM memory_items
-                    WHERE title LIKE ? OR summary LIKE ? OR distilled_knowledge LIKE ?
-                    ORDER BY id DESC
-                    LIMIT ?
-                    """,
-                    (f"%{query}%", f"%{query}%", f"%{query}%", limit),
-                ).fetchall()
-
-            task_rows = conn.execute(
-                """
-                SELECT id, inbox_item_id, task_type, status, project_key, title
-                FROM tasks
-                WHERE title LIKE ? OR details LIKE ?
-                ORDER BY id DESC
-                LIMIT ?
-                """,
-                (f"%{query}%", f"%{query}%", limit),
-            ).fetchall()
-            improvement_rows = conn.execute(
-                """
-                SELECT id, project_key, title, status, priority, created_at
-                FROM project_improvements
-                WHERE title LIKE ? OR description LIKE ?
-                ORDER BY id DESC
-                LIMIT ?
-                """,
-                (f"%{query}%", f"%{query}%", limit),
-            ).fetchall()
-
-        return {"inbox": inbox_rows, "memory": memory_rows, "tasks": task_rows, "improvements": improvement_rows}
+    def search(self, *args, **kwargs):
+        return self.searches.search(*args, **kwargs)
 
     def get_record(self, *args, **kwargs):
         return self.memory.get_record(*args, **kwargs)
@@ -292,86 +224,8 @@ class JulyDatabase:
 
     # ── Proactive recall ──────────────────────────────────────────────
 
-    def proactive_recall(self, raw_input: str, project_key: str | None = None, limit: int = 5) -> dict:
-        """Search memory proactively for related items when a new input arrives."""
-        words = [w for w in raw_input.lower().split() if len(w) > 3]
-        if not words:
-            return {
-                "related_memories": [],
-                "related_sessions": [],
-                "suggestions": [],
-                "skill_suggestions": self.suggest_skill_references(raw_input, project_key=project_key, limit=limit),
-            }
-
-        with self.connection() as conn:
-            # Search in memory via FTS
-            fts_query = " OR ".join(words[:8])
-            try:
-                memory_rows = conn.execute(
-                    """
-                    SELECT memory_items.id, memory_items.memory_kind, memory_items.status,
-                           memory_items.domain, memory_items.scope, memory_items.project_key,
-                           memory_items.title, memory_items.summary, memory_items.distilled_knowledge
-                    FROM memory_items_fts
-                    JOIN memory_items ON memory_items_fts.rowid = memory_items.id
-                    WHERE memory_items_fts MATCH ?
-                    ORDER BY memory_items.importance DESC, memory_items.id DESC
-                    LIMIT ?
-                    """,
-                    (fts_query, limit),
-                ).fetchall()
-            except sqlite3.OperationalError:
-                like_pattern = f"%{words[0]}%"
-                memory_rows = conn.execute(
-                    """
-                    SELECT id, memory_kind, status, domain, scope, project_key,
-                           title, summary, distilled_knowledge
-                    FROM memory_items
-                    WHERE title LIKE ? OR summary LIKE ? OR distilled_knowledge LIKE ?
-                    ORDER BY importance DESC, id DESC
-                    LIMIT ?
-                    """,
-                    (like_pattern, like_pattern, like_pattern, limit),
-                ).fetchall()
-
-            # Also search recent sessions for relevant context
-            session_rows = []
-            if project_key:
-                session_rows = conn.execute(
-                    """
-                    SELECT id, session_key, project_key, goal, status, summary, next_steps, started_at
-                    FROM sessions
-                    WHERE project_key = ? AND summary IS NOT NULL
-                    ORDER BY id DESC LIMIT 3
-                    """,
-                    (project_key,),
-                ).fetchall()
-
-            # Build suggestions
-            suggestions = []
-            for mem in memory_rows:
-                if mem["status"] == "ready" and mem["scope"] == "global":
-                    suggestions.append({
-                        "type": "reuse_memory",
-                        "memory_id": mem["id"],
-                        "title": mem["title"],
-                        "reason": f"Memoria global reutilizable: {mem['distilled_knowledge'][:120]}",
-                    })
-                elif mem["project_key"] and mem["project_key"] != project_key:
-                    suggestions.append({
-                        "type": "cross_project",
-                        "memory_id": mem["id"],
-                        "title": mem["title"],
-                        "from_project": mem["project_key"],
-                        "reason": f"Ya resolviste algo parecido en {mem['project_key']}: {mem['title']}",
-                    })
-
-        return {
-            "related_memories": [dict(r) for r in memory_rows],
-            "related_sessions": [dict(r) for r in session_rows],
-            "suggestions": suggestions,
-            "skill_suggestions": self.suggest_skill_references(raw_input, project_key=project_key, limit=limit),
-        }
+    def proactive_recall(self, *args, **kwargs):
+        return self.searches.proactive_recall(*args, **kwargs)
 
     def stats(self) -> dict[str, int]:
         with self.connection() as conn:

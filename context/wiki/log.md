@@ -107,3 +107,4 @@ tags:
 - Extraído `MemoryRepository` en dos cortes: primero lecturas (`list_inbox`, `list_tasks`, `list_memory`, `get_record`) y después mutaciones (`capture`, `resolve_clarification`, `promote_memory`) con helpers derivados; la suite sube a 43 tests verdes.
 - Extraído `TopicRepository` en July para crear topic keys, enlazar items y recuperar contexto agrupado por tema; `JulyDatabase` conserva wrappers compatibles y la suite sube a 47 tests verdes.
 - Extraído `ReferenceRepository` en July para contribuciones de modelos, metadatos de URLs y referencias externas; `JulyDatabase` conserva wrappers compatibles y la suite sube a 52 tests verdes.
+- Extraído `SearchRepository` en July para búsqueda FTS/fallback y recuperación proactiva con sugerencias de skills; `JulyDatabase` conserva wrappers compatibles y la suite sube a 55 tests verdes.
