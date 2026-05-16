@@ -184,6 +184,7 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - El primer repositorio por dominio es `july.repositories.skill_repository.SkillRepository`, responsable de registrar, listar y sugerir skills.
 - `july.repositories.session_repository.SessionRepository` contiene el protocolo de sesiones: inicio, resumen, cierre, contexto y sesión abierta.
 - `july.repositories.project_repository.ProjectRepository` contiene el registro canónico de proyectos, contexto agregado por proyecto y totales usados por cockpit, CLI y MCP.
+- `july.repositories.task_repository.TaskRepository` contiene mejoras posibles, pendientes y tareas manuales por proyecto.
 - `july.db.JulyDatabase` sigue siendo la fachada pública compatible para CLI, MCP, cockpit y tests.
 
 ## Modelo operativo
