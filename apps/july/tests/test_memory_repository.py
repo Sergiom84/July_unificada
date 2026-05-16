@@ -116,6 +116,98 @@ class MemoryRepositoryReadTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.database.get_record("sqlite_master", 1)
 
+    def test_capture_promote_and_resolve_clarification_delegate_to_repository(self) -> None:
+        first = self.database.capture(
+            "Guardar decision inicial",
+            "test",
+            None,
+            build_plan(
+                status="needs_clarification",
+                clarification_question="¿Qué proyecto?",
+                task_title="Tarea inicial",
+                memory_title="Memoria inicial",
+            ),
+        )
+
+        promoted = self.database.promote_memory(
+            first["memory_item_id"],
+            title="Memoria lista",
+            distilled_knowledge="Conocimiento listo",
+        )
+        resolved = self.database.resolve_clarification(
+            first["inbox_item_id"],
+            "Es para dashboard-av",
+            build_plan(
+                status="captured",
+                task_title="Tarea final",
+                memory_title="Memoria final",
+            ),
+        )
+
+        inbox = self.database.get_record("inbox_items", first["inbox_item_id"])
+        tasks = self.database.list_tasks()
+        memory = self.database.list_memory()
+        clarification = self.database.get_record("clarification_events", 1)
+
+        self.assertEqual(promoted["title"], "Memoria lista")
+        self.assertEqual(inbox["status"], "captured")
+        self.assertEqual(resolved["inbox_item_id"], first["inbox_item_id"])
+        self.assertEqual(tasks[0]["title"], "Tarea final")
+        self.assertEqual(memory[0]["title"], "Memoria final")
+        self.assertEqual(clarification["answer"], "Es para dashboard-av")
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(len(memory), 1)
+
+
+def build_plan(
+    *,
+    status: str,
+    clarification_question: str | None = None,
+    task_title: str,
+    memory_title: str,
+) -> dict:
+    return {
+        "classification": {
+            "intent": "general_note",
+            "confidence": 0.9,
+            "status": status,
+            "clarification_question": clarification_question,
+            "normalized_summary": memory_title,
+            "domain": "tests",
+            "project_key": "dashboard-av",
+        },
+        "task": {
+            "task_type": "follow_up",
+            "status": "pending",
+            "title": task_title,
+            "details": f"Detalle de {task_title}",
+            "project_key": "dashboard-av",
+            "due_hint": None,
+        },
+        "memory": {
+            "memory_kind": "decision",
+            "title": memory_title,
+            "summary": f"Resumen de {memory_title}",
+            "distilled_knowledge": f"Conocimiento de {memory_title}",
+            "domain": "tests",
+            "scope": "project",
+            "project_key": "dashboard-av",
+            "importance": 3,
+            "confidence": 0.9,
+            "status": "candidate",
+        },
+        "artifacts": [
+            {
+                "artifact_type": "path",
+                "value": "README.md",
+                "metadata_json": "{}",
+            }
+        ],
+        "context": {
+            "project_keys": ["dashboard-av"],
+        },
+    }
+
 
 if __name__ == "__main__":
     unittest.main()

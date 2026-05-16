@@ -104,3 +104,4 @@ tags:
 - Iniciado el refactor seguro de July según `plan_refactor_july_unificada.md`: versión alineada a `0.7.0`, añadida CI mínima de tests, extraídos `july.storage.schema`, `july.storage.utils`, `SkillRepository` y `SessionRepository`, y mantenida `JulyDatabase` como fachada compatible.
 - Continuado el refactor seguro de July: extraído `ProjectRepository` para registro de proyectos, contexto agregado y totales; añadida cobertura específica de repositorio y actualizados README/ROADMAP para reflejar el nuevo estado.
 - Extraído `TaskRepository` en July para mejoras posibles, pendientes y tareas manuales por proyecto; `JulyDatabase` mantiene wrappers compatibles y la suite sube a 39 tests verdes.
+- Extraído `MemoryRepository` en dos cortes: primero lecturas (`list_inbox`, `list_tasks`, `list_memory`, `get_record`) y después mutaciones (`capture`, `resolve_clarification`, `promote_memory`) con helpers derivados; la suite sube a 43 tests verdes.
