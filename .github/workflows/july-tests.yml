@@ -1,0 +1,36 @@
+name: July tests
+
+on:
+  push:
+    paths:
+      - "apps/july/**"
+      - ".github/workflows/july-tests.yml"
+  pull_request:
+    paths:
+      - "apps/july/**"
+      - ".github/workflows/july-tests.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/july
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+
+      - name: Run tests
+        run: python -m unittest discover -s tests

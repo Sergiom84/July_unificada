@@ -98,3 +98,8 @@ tags:
 - Consultado `C:\Users\sergi\Desktop\Aplicaciones\Indalo_padel` y aplicado en Notion el mismo formato de catálogo que July: página raíz `Indalo Pádel` con subpáginas `Ficha`, `Stack`, `Qué hace y qué resuelve` y `Evolución posible`.
 - Consultado `C:\Users\sergi\Desktop\Aplicaciones\Visual_copilot` y creado en Notion el catálogo de producto `Visual Copilot` con el mismo formato: página raíz limpia y subpáginas `Ficha`, `Stack`, `Qué hace y qué resuelve` y `Evolución posible`.
 - Consultado `C:\Users\sergi\Desktop\Aplicaciones\Lucy3000` y aplicado en Notion el formato de catálogo a `Lucy 3000`: página raíz limpia y subpáginas `Ficha`, `Stack`, `Qué hace y qué resuelve` y `Evolución posible`.
+
+## 2026-05-16
+
+- Iniciado el refactor seguro de July según `plan_refactor_july_unificada.md`: versión alineada a `0.7.0`, añadida CI mínima de tests, extraídos `july.storage.schema`, `july.storage.utils`, `SkillRepository` y `SessionRepository`, y mantenida `JulyDatabase` como fachada compatible.
+- Continuado el refactor seguro de July: extraído `ProjectRepository` para registro de proyectos, contexto agregado y totales; añadida cobertura específica de repositorio y actualizados README/ROADMAP para reflejar el nuevo estado.

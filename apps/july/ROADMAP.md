@@ -97,12 +97,24 @@ Lo que ya existe hoy en el codigo:
 - 15 tablas en la base de datos.
 - Tests ampliados para registro, lectura de `.skill`, sugerencias, CLI y MCP.
 
+### Refactor de núcleo iniciado (2026-05-16)
+
+- Versión de paquete alineada a `0.7.0` en `pyproject.toml` y `july.__version__`.
+- Añadido workflow `.github/workflows/july-tests.yml` para ejecutar tests automáticamente en Python 3.11.
+- Extraída la primera capa de infraestructura de persistencia:
+  - `july.storage.schema` contiene `SCHEMA_SQL`.
+  - `july.storage.utils` contiene `utc_now`, normalización/parsing de arrays JSON y tokenización de referencias de skills.
+- Extraído `july.repositories.skill_repository.SkillRepository` como primer repositorio por dominio.
+- Extraído `july.repositories.session_repository.SessionRepository` para el protocolo de sesiones.
+- Extraído `july.repositories.project_repository.ProjectRepository` para registro canónico de proyectos, contexto agregado y totales.
+- `july.db.JulyDatabase` conserva la compatibilidad pública y delega skills, sesiones y proyectos en repositorios sin cambiar CLI ni MCP.
+
 Estado resumido:
 
-- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables.
+- Implementado: nucleo local-first del orquestador + protocolo de sesion + topic keys + proactive recall + URL metadata + model traceability + external references + primer wizard conversacional por proyecto + perfilado de proyectos + preferencias + primer cockpit local por proyecto + registro estructurado de mejoras posibles y pendientes por proyecto + registro nativo de skills reutilizables + CI mínima + primera extracción de infraestructura `storage` y repositorios de skills/sesiones/proyectos.
 - Documentado y validado manualmente: protocolo operativo por proyecto (`PROJECT_PROTOCOL.md`) con distincion entre proyecto nuevo, proyecto conocido, iteracion, cierre, reglas de guardado y Fase 1/Fase 2.
 - Parcial: uso de LLM para refinado de clasificacion y memoria (funcional pero requiere API key).
-- Pendiente: refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
+- Pendiente: continuar el refactor por repositorios (tareas/mejoras y memoria), refinar continuidad conversacional, staleness, refresh selectivo, sugerencias cross-project mas utiles y probar `july-wizard` en proyectos reales hasta que el ritual sea natural.
 
 ## Prioridad de producto aclarada
 
@@ -139,31 +151,34 @@ Primer caso real usado para validacion manual:
 
 ## Siguiente bloque logico
 
-1. Refinar el cockpit local por proyecto.
+1. Continuar refactor del núcleo.
+   Extraer después tareas/mejoras y memoria, manteniendo `JulyDatabase` como fachada y ejecutando tests tras cada paso.
+
+2. Refinar el cockpit local por proyecto.
    Seguir mejorando densidad visual, filtros y recuperacion una vez resuelto el primer giro hacia consola de contexto memory-first y ayuda contextual.
 
-2. Continuidad conversacional real.
+3. Continuidad conversacional real.
    Probar y refinar la suite de skills globales July (`july`, `july-inicio`, `july-wizard` y aliases de mejoras/pendientes) para que Codex, Claude u otros agentes llamen a `project_entry`, `project_action help`, checkpoints y protocolo de sesion como comportamiento natural.
 
-3. Refresco selectivo y staleness.
+4. Refresco selectivo y staleness.
    Distinguir mejor entre contexto vigente, contexto parcial y contexto envejecido para no rehacer onboarding sin necesidad.
 
-4. Sugerencias cross-project y de skills mas utiles.
+5. Sugerencias cross-project y de skills mas utiles.
    Mejorar el ranking para que July traiga soluciones de otros repos o skills registradas con menos ruido y mejores motivos.
 
-5. UX conversacional para almacenamiento.
+6. UX conversacional para almacenamiento.
    Afinar las reglas de "guardar directo", "preguntar" o "ignorar" para evitar ruido y mantener memoria curada.
 
-6. Conversion de mejoras a tareas.
+7. Conversion de mejoras a tareas.
    Permitir convertir una mejora abierta en tarea planificada cuando Sergio decida implementarla.
 
-7. Preferencias por tipo de proyecto.
+8. Preferencias por tipo de proyecto.
    Usar `project_kind` y `preferences_json` para sugerir patrones distintos en webs de cliente, apps, backends, automatizaciones y knowledge bases.
 
-8. Embeddings y reranking.
+9. Embeddings y reranking.
    Anadir busqueda semantica ademas de FTS5 para mejorar la recuperacion cuando las palabras no coinciden literalmente.
 
-9. Conectores de entrada.
+10. Conectores de entrada.
    Telegram, email, importacion de Markdown y Obsidian como fuentes de captura.
 
 ## Aporte de Engram

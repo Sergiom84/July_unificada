@@ -176,6 +176,16 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - 44 comandos CLI.
 - 15 tablas en la base de datos.
 
+### Refactorización técnica iniciada
+
+- La versión instalable del paquete queda alineada con el estado documentado: `0.7.0`.
+- GitHub Actions ejecuta la suite de tests de `apps/july` en Python 3.11 para pushes y pull requests que toquen July.
+- La infraestructura SQLite empieza a separarse de `july.db`: el esquema vive en `july.storage.schema` y los helpers puros de fechas, arrays JSON y tokens de skills viven en `july.storage.utils`.
+- El primer repositorio por dominio es `july.repositories.skill_repository.SkillRepository`, responsable de registrar, listar y sugerir skills.
+- `july.repositories.session_repository.SessionRepository` contiene el protocolo de sesiones: inicio, resumen, cierre, contexto y sesión abierta.
+- `july.repositories.project_repository.ProjectRepository` contiene el registro canónico de proyectos, contexto agregado por proyecto y totales usados por cockpit, CLI y MCP.
+- `july.db.JulyDatabase` sigue siendo la fachada pública compatible para CLI, MCP, cockpit y tests.
+
 ## Modelo operativo
 
 Pipeline actual:
