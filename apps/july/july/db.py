@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from july.config import Settings
+from july.repositories.memory_repository import MemoryRepository
 from july.repositories.project_repository import ProjectRepository
 from july.repositories.session_repository import SessionRepository
 from july.repositories.skill_repository import SkillRepository
@@ -23,6 +24,7 @@ class JulyDatabase:
         self.sessions = SessionRepository(self.connection)
         self.skills = SkillRepository(self.connection)
         self.tasks = TaskRepository(self.connection)
+        self.memory = MemoryRepository(self.connection)
 
     @contextmanager
     def connection(self):
@@ -364,47 +366,14 @@ class JulyDatabase:
         conn.execute("DELETE FROM artifacts WHERE inbox_item_id = ?", (inbox_item_id,))
         conn.execute("DELETE FROM memory_items WHERE inbox_item_id = ?", (inbox_item_id,))
 
-    def list_inbox(self, limit: int = 20) -> list[sqlite3.Row]:
-        with self.connection() as conn:
-            cursor = conn.execute(
-                """
-                SELECT id, detected_intent, status, domain, project_key, normalized_summary, created_at
-                FROM inbox_items
-                ORDER BY id DESC
-                LIMIT ?
-                """,
-                (limit,),
-            )
-            return cursor.fetchall()
+    def list_inbox(self, *args, **kwargs):
+        return self.memory.list_inbox(*args, **kwargs)
 
-    def list_tasks(self, status: str | None = None, limit: int = 20) -> list[sqlite3.Row]:
-        query = """
-            SELECT id, inbox_item_id, task_type, status, project_key, title, created_at
-            FROM tasks
-        """
-        params: list[object] = []
-        if status:
-            query += " WHERE status = ?"
-            params.append(status)
-        query += " ORDER BY id DESC LIMIT ?"
-        params.append(limit)
+    def list_tasks(self, *args, **kwargs):
+        return self.memory.list_tasks(*args, **kwargs)
 
-        with self.connection() as conn:
-            cursor = conn.execute(query, tuple(params))
-            return cursor.fetchall()
-
-    def list_memory(self, limit: int = 20) -> list[sqlite3.Row]:
-        with self.connection() as conn:
-            cursor = conn.execute(
-                """
-                SELECT id, inbox_item_id, memory_kind, status, domain, scope, project_key, title, created_at
-                FROM memory_items
-                ORDER BY id DESC
-                LIMIT ?
-                """,
-                (limit,),
-            )
-            return cursor.fetchall()
+    def list_memory(self, *args, **kwargs):
+        return self.memory.list_memory(*args, **kwargs)
 
     def search(self, query: str, limit: int = 10) -> dict[str, list[sqlite3.Row]]:
         with self.connection() as conn:
@@ -479,18 +448,8 @@ class JulyDatabase:
 
         return {"inbox": inbox_rows, "memory": memory_rows, "tasks": task_rows, "improvements": improvement_rows}
 
-    def get_record(self, table: str, record_id: int) -> sqlite3.Row | None:
-        allowed_tables = {
-            "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
-            "clarification_events", "sessions", "topic_keys", "topic_links",
-            "model_contributions", "url_metadata", "external_references", "projects",
-            "project_improvements", "skill_references",
-        }
-        if table not in allowed_tables:
-            raise ValueError(f"Unsupported table: {table}")
-        with self.connection() as conn:
-            cursor = conn.execute(f"SELECT * FROM {table} WHERE id = ?", (record_id,))
-            return cursor.fetchone()
+    def get_record(self, *args, **kwargs):
+        return self.memory.get_record(*args, **kwargs)
 
     # ── Session protocol ──────────────────────────────────────────────
 
