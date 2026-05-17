@@ -95,6 +95,8 @@ class ProjectConversationService:
             "source_files": code_analysis.source_files,
         }
 
+        memory_hygiene = self.database.memory_audit_summary(resolved_project_key)
+
         return {
             "project_key": resolved_project_key,
             "repo_root": str(repo_root),
@@ -129,6 +131,7 @@ class ProjectConversationService:
                 "preferences": json.loads(project["preferences_json"]),
             },
             "related_context": recall,
+            "memory_hygiene": memory_hygiene,
             "architect": architect,
             "developer_level": developer_level,
             "copilot_hint": build_copilot_hint(developer_level, architect),
@@ -342,6 +345,58 @@ class ProjectConversationService:
             resolved_project_key,
             wiki_pages_changed=wiki_pages_changed,
             notes=notes,
+        )
+
+    def audit_memory(
+        self,
+        *,
+        repo_path: str | None = None,
+        project_key: str | None = None,
+        dry_run: bool = False,
+        limit: int = 20,
+    ) -> dict[str, Any]:
+        repo_root, resolved_project_key = resolve_project_identity(self.database, repo_path=repo_path, project_key=project_key)
+        surface = inspect_repository_surface(repo_root)
+        self.database.upsert_project(
+            resolved_project_key,
+            str(repo_root),
+            repo_name=repo_root.name,
+        )
+        return self.database.audit_memory(
+            resolved_project_key,
+            current_entrypoints=surface.entrypoints,
+            dry_run=dry_run,
+            limit=limit,
+        )
+
+    def memory_audit_findings(
+        self,
+        *,
+        repo_path: str | None = None,
+        project_key: str | None = None,
+        status: str | None = "open",
+        limit: int = 20,
+    ) -> dict[str, Any]:
+        resolved_project_key = None
+        if repo_path or project_key:
+            repo_root, resolved_project_key = resolve_project_identity(self.database, repo_path=repo_path, project_key=project_key)
+            self.database.upsert_project(resolved_project_key, str(repo_root), repo_name=repo_root.name)
+        return {
+            "project_key": resolved_project_key,
+            "findings": self.database.list_memory_audit_findings(
+                project_key=resolved_project_key,
+                status=status,
+                limit=limit,
+            ),
+        }
+
+    def resolve_memory_audit_finding(self, finding_id: int, status: str, *, review_notes: str | None = None, reviewed_by: str | None = None, apply_memory_status: str | None = None) -> dict[str, Any]:
+        return self.database.resolve_memory_audit_finding(
+            finding_id,
+            status,
+            review_notes=review_notes,
+            reviewed_by=reviewed_by,
+            apply_memory_status=apply_memory_status,
         )
 
     def _store_checkpoint(self, text: str, project_key: str, kind: str, source: str) -> dict[str, Any]:

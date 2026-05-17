@@ -134,6 +134,25 @@ def build_parser() -> argparse.ArgumentParser:
     distill_record.add_argument("--wiki-page", action="append", default=[], help="Wiki page changed; repeatable")
     distill_record.add_argument("--notes", default=None)
 
+    memory_audit = subparsers.add_parser("memory-audit", help="Audit project memory for obsolete, duplicate, low-quality, or possibly completed items")
+    memory_audit.add_argument("--repo-path", default=None, help="Path to the repo to inspect")
+    memory_audit.add_argument("--project-key", default=None, help="Optional canonical project key override")
+    memory_audit.add_argument("--dry-run", action="store_true", help="Preview findings without saving them")
+    memory_audit.add_argument("--limit", type=int, default=20)
+
+    memory_audit_findings = subparsers.add_parser("memory-audit-findings", help="List memory hygiene findings")
+    memory_audit_findings.add_argument("--repo-path", default=None, help="Path to the repo to inspect")
+    memory_audit_findings.add_argument("--project-key", default=None, help="Optional canonical project key override")
+    memory_audit_findings.add_argument("--status", default="open", choices=["open", "accepted", "dismissed", "resolved", "all"])
+    memory_audit_findings.add_argument("--limit", type=int, default=20)
+
+    memory_audit_resolve = subparsers.add_parser("memory-audit-resolve", help="Review or resolve a memory hygiene finding")
+    memory_audit_resolve.add_argument("finding_id", type=int)
+    memory_audit_resolve.add_argument("status", choices=["open", "accepted", "dismissed", "resolved"])
+    memory_audit_resolve.add_argument("--notes", default=None)
+    memory_audit_resolve.add_argument("--reviewed-by", default=None)
+    memory_audit_resolve.add_argument("--apply-memory-status", default=None, choices=["ready", "needs_review", "archived", "superseded", "duplicate"])
+
     search = subparsers.add_parser("search", help="Search inbox, tasks, and memory")
     search.add_argument("query")
     search.add_argument("--limit", type=int, default=10)
@@ -143,7 +162,7 @@ def build_parser() -> argparse.ArgumentParser:
         "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
         "clarification_events", "sessions", "topic_keys", "topic_links",
         "model_contributions", "url_metadata", "external_references", "projects",
-        "project_improvements", "project_distillations", "skill_references",
+        "project_improvements", "project_distillations", "memory_audit_findings", "skill_references",
     ])
     show.add_argument("record_id", type=int)
 

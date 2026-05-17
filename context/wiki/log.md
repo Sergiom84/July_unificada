@@ -112,3 +112,7 @@ tags:
 - Añadido el ritual de destilado July a wiki: checklist en `docs/notion/checklist-destilado-july-wiki.md`, skill `/july-destilar` y concepto [[Ritual de destilado July a wiki]] para forzar el paso de hallazgos duraderos desde July hacia la wiki cada 5 sesiones.
 - Actualizadas páginas activas de memoria local para sustituir referencias operativas a `Mente_unificada` por `July_unificada` y renombrado el concepto [[Bóveda local cifrada para July_unificada]].
 - Integrado el ritual de destilado en July como señal operativa real: nueva tabla `project_distillations`, repositorio `DistillationRepository`, comandos `distill-candidates`/`distill-record`, herramientas MCP `project_distill_candidates`/`project_distillation_record`, aviso en `session-end` y panel de cockpit cuando un proyecto pide pasar hallazgos duraderos a la wiki.
+
+## 2026-05-17
+
+- Integrada la capa de higiene de memoria de July: nueva tabla `memory_audit_findings`, repositorio `MemoryAuditRepository`, comandos `memory-audit`/`memory-audit-findings`/`memory-audit-resolve`, herramientas MCP `memory_audit`/`memory_audit_findings`/`memory_audit_resolve` y resumen `memory_hygiene` en `project-entry` para detectar memoria obsoleta, duplicada, de baja calidad o posiblemente completada sin borrar nada automáticamente.

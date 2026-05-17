@@ -109,9 +109,21 @@ Lo que ya existe hoy en el codigo:
 - 46 comandos CLI.
 - 16 tablas en la base de datos.
 
+### Bloque v0.9 (implementado)
+
+- Higiene de memoria separada de la destilación July a wiki.
+- Nueva tabla `memory_audit_findings` para guardar avisos revisables sin borrar ni archivar automáticamente.
+- Nuevo repositorio `MemoryAuditRepository` para detectar memoria obsoleta, duplicada, de baja calidad o pendientes posiblemente completados.
+- Nuevos comandos CLI: `memory-audit`, `memory-audit-findings` y `memory-audit-resolve`.
+- Nuevas herramientas MCP: `memory_audit`, `memory_audit_findings` y `memory_audit_resolve`.
+- `project-entry` devuelve `memory_hygiene` para que los agentes vean deuda de limpieza antes de acumular más memoria.
+- 39 herramientas MCP expuestas.
+- 49 comandos CLI.
+- 17 tablas en la base de datos.
+
 ### Refactor de núcleo iniciado (2026-05-16)
 
-- Versión de paquete alineada a `0.8.0` en `pyproject.toml` y `july.__version__`.
+- Versión de paquete alineada a `0.9.0` en `pyproject.toml` y `july.__version__`.
 - Añadido workflow `.github/workflows/july-tests.yml` para ejecutar tests automáticamente en Python 3.11.
 - Extraída la primera capa de infraestructura de persistencia:
   - `july.storage.schema` contiene `SCHEMA_SQL`.

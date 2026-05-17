@@ -43,6 +43,9 @@ class StorageMigrationTests(unittest.TestCase):
                 distillation_columns = {
                     row["name"] for row in conn.execute("PRAGMA table_info(project_distillations)").fetchall()
                 }
+                audit_columns = {
+                    row["name"] for row in conn.execute("PRAGMA table_info(memory_audit_findings)").fetchall()
+                }
                 legacy_session = conn.execute("SELECT * FROM sessions WHERE session_key = ?", ("legacy-session",)).fetchone()
 
             self.assertIsNotNone(project)
@@ -54,6 +57,7 @@ class StorageMigrationTests(unittest.TestCase):
             self.assertIn("updated_at", session_columns)
             self.assertEqual(legacy_session["updated_at"], "2026-05-16T00:00:00+00:00")
             self.assertIn("wiki_pages_changed_json", distillation_columns)
+            self.assertIn("evidence_json", audit_columns)
 
 
 def create_legacy_database(db_path: Path) -> None:

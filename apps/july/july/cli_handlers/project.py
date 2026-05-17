@@ -150,6 +150,40 @@ def handle_distill_record(ctx: CLIContext) -> int:
     return 0
 
 
+def handle_memory_audit(ctx: CLIContext) -> int:
+    result = ctx.project_service.audit_memory(
+        repo_path=ctx.args.repo_path,
+        project_key=ctx.args.project_key,
+        dry_run=ctx.args.dry_run,
+        limit=ctx.args.limit,
+    )
+    print(json.dumps(result, indent=2, ensure_ascii=True))
+    return 0
+
+
+def handle_memory_audit_findings(ctx: CLIContext) -> int:
+    result = ctx.project_service.memory_audit_findings(
+        repo_path=ctx.args.repo_path,
+        project_key=ctx.args.project_key,
+        status=ctx.args.status,
+        limit=ctx.args.limit,
+    )
+    print(json.dumps(result, indent=2, ensure_ascii=True))
+    return 0
+
+
+def handle_memory_audit_resolve(ctx: CLIContext) -> int:
+    result = ctx.project_service.resolve_memory_audit_finding(
+        ctx.args.finding_id,
+        ctx.args.status,
+        review_notes=ctx.args.notes,
+        reviewed_by=ctx.args.reviewed_by,
+        apply_memory_status=ctx.args.apply_memory_status,
+    )
+    print(json.dumps(result, indent=2, ensure_ascii=True))
+    return 0
+
+
 PROJECT_HANDLERS = {
     "project-entry": handle_project_entry,
     "project-onboard": handle_project_onboard,
@@ -163,4 +197,7 @@ PROJECT_HANDLERS = {
     "pending-status": handle_pending_status,
     "distill-candidates": handle_distill_candidates,
     "distill-record": handle_distill_record,
+    "memory-audit": handle_memory_audit,
+    "memory-audit-findings": handle_memory_audit_findings,
+    "memory-audit-resolve": handle_memory_audit_resolve,
 }

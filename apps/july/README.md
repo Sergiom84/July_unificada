@@ -186,9 +186,20 @@ Importante: esta es la experiencia objetivo del producto. El codigo actual ya im
 - 46 comandos CLI.
 - 16 tablas en la base de datos.
 
+### Nuevo en v0.9
+
+- Higiene de memoria separada del destilado July a wiki: tabla `memory_audit_findings` y repositorio `MemoryAuditRepository`.
+- Nuevos comandos CLI: `memory-audit`, `memory-audit-findings` y `memory-audit-resolve`.
+- Nuevas herramientas MCP: `memory_audit`, `memory_audit_findings` y `memory_audit_resolve`.
+- `project-entry` devuelve `memory_hygiene` para avisar de memoria obsoleta, duplicada, de baja calidad o posiblemente completada.
+- La auditoría no borra ni archiva automáticamente; solo crea avisos revisables.
+- 39 herramientas MCP expuestas.
+- 49 comandos CLI.
+- 17 tablas en la base de datos.
+
 ### Refactorización técnica iniciada
 
-- La versión instalable del paquete queda alineada con el estado documentado: `0.8.0`.
+- La versión instalable del paquete queda alineada con el estado documentado: `0.9.0`.
 - GitHub Actions ejecuta la suite de tests de `apps/july` en Python 3.11 para pushes y pull requests que toquen July.
 - La infraestructura SQLite empieza a separarse de `july.db`: el esquema vive en `july.storage.schema`, las migraciones explícitas en `july.storage.migrations` y los helpers puros de fechas, arrays JSON y tokens de skills viven en `july.storage.utils`.
 - El primer repositorio por dominio es `july.repositories.skill_repository.SkillRepository`, responsable de registrar, listar y sugerir skills.
@@ -512,6 +523,7 @@ La UI local expone una pagina por proyecto con:
 - pendientes manuales;
 - mejoras posibles abiertas;
 - aviso de destilado July a wiki cuando el proyecto acumula sesiones o hallazgos duraderos;
+- resumen de higiene de memoria cuando hay avisos abiertos;
 - sugerencias read-only;
 - acciones explicitas plegables para revisar proyecto, registrar decision, guardar hallazgo, guardar mejora, organizar pendientes y preparar la siguiente sesion.
 
@@ -521,7 +533,7 @@ Variables de configuracion UI:
 - `JULY_UI_PORT`
 - `JULY_UI_BASE_URL`
 
-Herramientas MCP expuestas actualmente (`36`):
+Herramientas MCP expuestas actualmente (`39`):
 
 - `capture_input` (con proactive recall, fetch URLs, model traceability)
 - `search_context`
@@ -534,6 +546,9 @@ Herramientas MCP expuestas actualmente (`36`):
 - `project_pending_status`
 - `project_distill_candidates`
 - `project_distillation_record`
+- `memory_audit`
+- `memory_audit_findings`
+- `memory_audit_resolve`
 - `project_entry`
 - `project_onboard`
 - `project_action`
@@ -622,6 +637,7 @@ Tablas principales:
 | `external_references` | Referencias a fuentes externas (skills.sh, agents.md) |
 | `skill_references` | Skills locales registradas para sugerencias proactivas |
 | `project_distillations` | Cortes de destilado July a wiki por proyecto |
+| `memory_audit_findings` | Avisos revisables de memoria obsoleta, duplicada o de baja calidad |
 | `projects` | Registro canonico de proyectos para cockpit, deep links, tipo de proyecto, tags y preferencias |
 
 Indices FTS5: `inbox_items_fts`, `memory_items_fts`.

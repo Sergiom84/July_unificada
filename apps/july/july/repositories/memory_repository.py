@@ -302,7 +302,7 @@ class MemoryRepository:
             "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
             "clarification_events", "sessions", "topic_keys", "topic_links",
             "model_contributions", "url_metadata", "external_references", "projects",
-            "project_improvements", "project_distillations", "skill_references",
+            "project_improvements", "project_distillations", "memory_audit_findings", "skill_references",
         }
         if table not in allowed_tables:
             raise ValueError(f"Unsupported table: {table}")

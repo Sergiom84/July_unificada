@@ -119,6 +119,31 @@ class ProjectToolHandlers:
             notes=arguments.get("notes"),
         )
 
+    def tool_memory_audit(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        return self.project_service.audit_memory(
+            repo_path=arguments.get("repo_path"),
+            project_key=arguments.get("project_key"),
+            dry_run=bool(arguments.get("dry_run", False)),
+            limit=int(arguments.get("limit", 20)),
+        )
+
+    def tool_memory_audit_findings(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        return self.project_service.memory_audit_findings(
+            repo_path=arguments.get("repo_path"),
+            project_key=arguments.get("project_key"),
+            status=arguments.get("status", "open"),
+            limit=int(arguments.get("limit", 20)),
+        )
+
+    def tool_memory_audit_resolve(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        return self.project_service.resolve_memory_audit_finding(
+            int(arguments["finding_id"]),
+            require_string(arguments, "status"),
+            review_notes=arguments.get("notes"),
+            reviewed_by=arguments.get("reviewed_by"),
+            apply_memory_status=arguments.get("apply_memory_status"),
+        )
+
 
 def build_project_tools(server) -> dict[str, ToolSpec]:
     return {
@@ -324,5 +349,52 @@ def build_project_tools(server) -> dict[str, ToolSpec]:
                 },
             },
             handler=server.tool_project_distillation_record,
+        ),
+        "memory_audit": ToolSpec(
+            name="memory_audit",
+            title="Memory Audit",
+            description="Audit project memory for obsolete, duplicate, low-quality, or possibly completed items.",
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "repo_path": {"type": "string"},
+                    "project_key": {"type": "string"},
+                    "dry_run": {"type": "boolean"},
+                    "limit": {"type": "integer"},
+                },
+            },
+            handler=server.tool_memory_audit,
+        ),
+        "memory_audit_findings": ToolSpec(
+            name="memory_audit_findings",
+            title="Memory Audit Findings",
+            description="List open or reviewed memory hygiene findings.",
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "repo_path": {"type": "string"},
+                    "project_key": {"type": "string"},
+                    "status": {"type": "string", "enum": ["open", "accepted", "dismissed", "resolved", "all"]},
+                    "limit": {"type": "integer"},
+                },
+            },
+            handler=server.tool_memory_audit_findings,
+        ),
+        "memory_audit_resolve": ToolSpec(
+            name="memory_audit_resolve",
+            title="Resolve Memory Audit Finding",
+            description="Review a memory hygiene finding and optionally apply a memory status such as archived or duplicate.",
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "finding_id": {"type": "integer"},
+                    "status": {"type": "string", "enum": ["open", "accepted", "dismissed", "resolved"]},
+                    "notes": {"type": "string"},
+                    "reviewed_by": {"type": "string"},
+                    "apply_memory_status": {"type": "string", "enum": ["ready", "needs_review", "archived", "superseded", "duplicate"]},
+                },
+                "required": ["finding_id", "status"],
+            },
+            handler=server.tool_memory_audit_resolve,
         ),
     }

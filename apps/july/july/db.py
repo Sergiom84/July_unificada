@@ -7,6 +7,7 @@ from pathlib import Path
 
 from july.config import Settings
 from july.repositories.distillation_repository import DistillationRepository
+from july.repositories.memory_audit_repository import MemoryAuditRepository
 from july.repositories.memory_repository import MemoryRepository
 from july.repositories.project_repository import ProjectRepository
 from july.repositories.reference_repository import ReferenceRepository
@@ -33,6 +34,7 @@ class JulyDatabase:
         self.topics = TopicRepository(self.connection)
         self.references = ReferenceRepository(self.connection)
         self.distillations = DistillationRepository(self.connection)
+        self.memory_audits = MemoryAuditRepository(self.connection)
         self.searches = SearchRepository(self.connection, self.suggest_skill_references)
 
     @contextmanager
@@ -148,6 +150,20 @@ class JulyDatabase:
     def list_distillations(self, *args, **kwargs):
         return self.distillations.list_distillations(*args, **kwargs)
 
+    # ── Memory hygiene ────────────────────────────────────────────────
+
+    def audit_memory(self, *args, **kwargs):
+        return self.memory_audits.audit_project_memory(*args, **kwargs)
+
+    def list_memory_audit_findings(self, *args, **kwargs):
+        return self.memory_audits.list_findings(*args, **kwargs)
+
+    def memory_audit_summary(self, *args, **kwargs):
+        return self.memory_audits.summary(*args, **kwargs)
+
+    def resolve_memory_audit_finding(self, *args, **kwargs):
+        return self.memory_audits.resolve_finding(*args, **kwargs)
+
     # ── Topic keys ────────────────────────────────────────────────────
 
     def create_topic(self, *args, **kwargs):
@@ -223,6 +239,7 @@ class JulyDatabase:
                 "projects": conn.execute("SELECT COUNT(*) FROM projects").fetchone()[0],
                 "project_improvements": conn.execute("SELECT COUNT(*) FROM project_improvements").fetchone()[0],
                 "project_distillations": conn.execute("SELECT COUNT(*) FROM project_distillations").fetchone()[0],
+                "memory_audit_findings": conn.execute("SELECT COUNT(*) FROM memory_audit_findings").fetchone()[0],
                 "developer_interactions": conn.execute("SELECT COUNT(*) FROM developer_interactions").fetchone()[0],
             }
 
@@ -354,7 +371,7 @@ class JulyDatabase:
                 "inbox_items", "tasks", "memory_items", "artifacts", "project_links",
                 "clarification_events", "sessions", "topic_keys", "topic_links",
                 "model_contributions", "url_metadata", "external_references", "skill_references", "projects",
-                "project_improvements", "project_distillations", "developer_profile", "developer_interactions",
+                "project_improvements", "project_distillations", "memory_audit_findings", "developer_profile", "developer_interactions",
         ):
                 rows = conn.execute(f"SELECT * FROM {table} ORDER BY id ASC").fetchall()
                 payload[table] = [dict(row) for row in rows]

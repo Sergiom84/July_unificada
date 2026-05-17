@@ -115,6 +115,31 @@ CREATE TABLE IF NOT EXISTS project_distillations (
 CREATE INDEX IF NOT EXISTS idx_project_distillations_project_session
 ON project_distillations(project_key, to_session_id, distilled_at);
 
+CREATE TABLE IF NOT EXISTS memory_audit_findings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_key TEXT,
+    finding_type TEXT NOT NULL,
+    severity TEXT NOT NULL DEFAULT 'medium',
+    subject_table TEXT NOT NULL,
+    subject_id INTEGER NOT NULL,
+    related_table TEXT,
+    related_id INTEGER,
+    reason TEXT NOT NULL,
+    evidence_json TEXT NOT NULL DEFAULT '[]',
+    suggestion TEXT,
+    status TEXT NOT NULL DEFAULT 'open',
+    created_at TEXT NOT NULL,
+    reviewed_at TEXT,
+    reviewed_by TEXT,
+    review_notes TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_memory_audit_findings_project_status
+ON memory_audit_findings(project_key, status, finding_type, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_memory_audit_findings_subject
+ON memory_audit_findings(subject_table, subject_id, finding_type, status);
+
 CREATE TABLE IF NOT EXISTS clarification_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     inbox_item_id INTEGER NOT NULL REFERENCES inbox_items(id) ON DELETE CASCADE,
