@@ -13,6 +13,9 @@ SKILL_STOPWORDS = {
     "hacia", "hacía", "quiero", "necesito", "cual", "cuál", "era", "sirve",
     "ayuda", "ayudar", "alguna", "alguno", "tenemos", "skill", "skills",
     "proyecto", "proyectos", "crear", "crea",
+    "contexto", "definido", "herramienta", "herramientas", "json", "listar",
+    "mejoras", "paso", "probar", "prueba", "pruebas", "real", "recuperar",
+    "validar",
 }
 
 def utc_now() -> str:

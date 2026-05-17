@@ -131,6 +131,9 @@ class JulyDatabase:
     def get_open_session(self, *args, **kwargs):
         return self.sessions.get_open_session(*args, **kwargs)
 
+    def touch_project_session(self, *args, **kwargs):
+        return self.sessions.touch_project_session(*args, **kwargs)
+
     def list_sessions(self, *args, **kwargs):
         return self.sessions.list_sessions(*args, **kwargs)
 

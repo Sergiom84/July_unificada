@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 
+from july.skill_registry import discover_local_skill_commands
 from july.storage.utils import (
     normalize_json_array,
     parse_json_array,
@@ -11,6 +13,44 @@ from july.storage.utils import (
 )
 
 SKILL_REFERENCE_STATUSES = {"active", "inactive"}
+CORE_JULY_TRIGGER_RE = re.compile(
+    r"\b(july|memoria|contexto|sesi[oó]n|sesiones|pendiente|pendientes|mejora|mejoras|project[-_ ]?entry)\b",
+    re.IGNORECASE,
+)
+CORE_JULY_COMMAND_ORDER = ("july", "july-inicio", "pendientes", "mejoras")
+PROJECT_KIND_BOOSTS = {
+    "mobile_app": {
+        "flutter": 2.0,
+        "supabase": 2.0,
+        "browser": 2.0,
+        "release": 1.5,
+        "release-smoke": 2.0,
+    },
+    "web_app": {
+        "browser": 1.5,
+        "visual-copilot": 1.5,
+        "designlang": 1.5,
+        "design-extract": 1.5,
+    },
+    "website": {
+        "browser": 1.5,
+        "visual-copilot": 1.5,
+        "designlang": 1.5,
+        "design-extract": 1.5,
+    },
+    "automation": {
+        "caveman": 1.5,
+        "python": 1.5,
+    },
+    "cli_tool": {
+        "caveman": 1.5,
+        "python": 1.5,
+    },
+    "software": {
+        "caveman": 1.5,
+        "python": 1.5,
+    },
+}
 
 
 class SkillRepository:
@@ -125,9 +165,11 @@ class SkillRepository:
         limit: int = 5,
     ) -> list[dict]:
         query_tokens = skill_reference_tokens(text)
-        if not query_tokens:
+        core_suggestions = self.core_july_suggestions(text)
+        if not query_tokens and not core_suggestions:
             return []
 
+        project_profile = self.get_project_profile(project_key)
         suggestions: list[dict] = []
         for row in self.list_skill_references(limit=200, include_trigger=True):
             item = dict(row)
@@ -147,11 +189,12 @@ class SkillRepository:
             skill_tokens = skill_reference_tokens(haystack)
             overlap = sorted(query_tokens & skill_tokens)
             domain_hits = sorted(query_tokens & skill_reference_tokens(" ".join(domains)))
+            context_boost = self.project_context_boost(project_profile, skill_tokens, domains, item["skill_name"])
             project_match = bool(project_key and project_key in project_keys)
-            if not overlap and not project_match:
+            if not overlap and not project_match and context_boost <= 0:
                 continue
 
-            score = (len(overlap) * 2) + (len(domain_hits) * 3)
+            score = (len(overlap) * 2) + (len(domain_hits) * 3) + context_boost
             if project_match:
                 score += 8
             elif project_keys:
@@ -159,13 +202,15 @@ class SkillRepository:
             else:
                 score += 1
 
-            if score <= 3:
+            if score <= 3 and context_boost <= 0:
                 continue
 
             if project_match:
                 reason = f"Registrada para este proyecto; coincide con: {', '.join(overlap[:5]) or project_key}"
             elif domain_hits:
                 reason = f"Coincide con dominios: {', '.join(domain_hits[:5])}"
+            elif context_boost > 0:
+                reason = f"Encaja con el tipo de proyecto ({project_profile.get('project_kind')})"
             else:
                 reason = f"Coincide con: {', '.join(overlap[:5])}"
 
@@ -181,5 +226,71 @@ class SkillRepository:
                 "reason": reason,
             })
 
-        suggestions.sort(key=lambda suggestion: suggestion["score"], reverse=True)
-        return suggestions[:limit]
+        suggestions.sort(key=lambda suggestion: (-suggestion["score"], suggestion["skill_name"]))
+        return merge_skill_suggestions(core_suggestions, suggestions, limit)
+
+    def get_project_profile(self, project_key: str | None) -> dict:
+        if not project_key:
+            return {"project_kind": None, "project_tags": []}
+        with self.connection() as conn:
+            row = conn.execute(
+                "SELECT project_kind, project_tags_json FROM projects WHERE project_key = ?",
+                (project_key,),
+            ).fetchone()
+        if row is None:
+            return {"project_kind": None, "project_tags": []}
+        return {
+            "project_kind": row["project_kind"],
+            "project_tags": parse_json_array(row["project_tags_json"]),
+        }
+
+    def project_context_boost(
+        self,
+        project_profile: dict,
+        skill_tokens: set[str],
+        domains: list[str],
+        skill_name: str,
+    ) -> float:
+        project_kind = project_profile.get("project_kind")
+        boost_map = PROJECT_KIND_BOOSTS.get(project_kind or "", {})
+        if not boost_map:
+            return 0.0
+        searchable = set(skill_tokens)
+        searchable.update(skill_reference_tokens(" ".join(domains)))
+        searchable.update(skill_reference_tokens(skill_name))
+        return sum(weight for token, weight in boost_map.items() if token in searchable)
+
+    def core_july_suggestions(self, text: str) -> list[dict]:
+        if not CORE_JULY_TRIGGER_RE.search(text):
+            return []
+        commands = {
+            item["skill_name"]: item
+            for item in discover_local_skill_commands(limit=100)
+            if item.get("skill_name") in CORE_JULY_COMMAND_ORDER
+        }
+        suggestions: list[dict] = []
+        for index, skill_name in enumerate(CORE_JULY_COMMAND_ORDER):
+            item = commands.get(skill_name)
+            if item is None:
+                continue
+            suggestions.append({
+                **item,
+                "score": 1000 - index,
+                "reason": "Comando core de July para memoria, contexto, sesiones, pendientes o mejoras.",
+                "is_core": True,
+            })
+        return suggestions
+
+
+def merge_skill_suggestions(core: list[dict], ranked: list[dict], limit: int) -> list[dict]:
+    merged: list[dict] = []
+    seen: set[str] = set()
+    for suggestion in [*core, *ranked]:
+        name = suggestion.get("skill_name")
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        merged.append(suggestion)
+        if len(merged) >= limit:
+            break
+    return merged

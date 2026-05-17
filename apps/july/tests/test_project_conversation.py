@@ -99,6 +99,37 @@ class ProjectConversationTests(unittest.TestCase):
         self.assertEqual(result["recommended_action"], "resume_context")
         self.assertEqual(result["options"][0]["action"], "resume_context")
 
+    def test_project_entry_warns_about_stale_sessions(self) -> None:
+        self.database.session_start("dashboard-stale", project_key="dashboard-av")
+        old_timestamp = "2026-01-01T00:00:00+00:00"
+        with self.database.connection() as conn:
+            conn.execute(
+                "UPDATE sessions SET updated_at = ? WHERE session_key = ?",
+                (old_timestamp, "dashboard-stale"),
+            )
+
+        result = self.service.project_entry(repo_path=str(self.repo_root))
+
+        self.assertIn("stale", result["entry_message"])
+        self.assertEqual(result["session_health"]["stale_sessions"][0]["session_key"], "dashboard-stale")
+        self.assertEqual(result["session_health"]["suggested_actions"][0]["action"], "session-end")
+
+    def test_project_entry_lists_local_playbooks_separately(self) -> None:
+        playbook_dir = self.repo_root / "docs" / "skills"
+        playbook_dir.mkdir(parents=True)
+        (playbook_dir / "skill-release-smoke.md").write_text(
+            "# skill-release-smoke\n\n## Cuando usar\n- Checklist pre-release del proyecto.\n",
+            encoding="utf-8",
+        )
+
+        result = self.service.project_entry(repo_path=str(self.repo_root))
+        playbooks = result["related_context"]["local_playbooks"]
+
+        self.assertEqual(playbooks[0]["type"], "project_playbook")
+        self.assertEqual(playbooks[0]["scope"], "local")
+        self.assertTrue(playbooks[0]["project_scoped"])
+        self.assertIn("skill-release-smoke.md", playbooks[0]["source_path"])
+
     def test_conversation_checkpoint_can_persist_clear_reusable_finding(self) -> None:
         result = self.service.conversation_checkpoint(
             "Decision: usar ExcelJS para exportaciones porque evita automatizaciones fragiles con COM.",
@@ -145,6 +176,14 @@ class ProjectConversationTests(unittest.TestCase):
         self.assertTrue(any("onboarding" in item.lower() for item in result["can_do"]))
 
     def test_project_improvement_can_be_saved_and_listed(self) -> None:
+        self.database.session_start("dashboard-active", project_key="dashboard-av")
+        old_timestamp = "2026-01-01T00:00:00+00:00"
+        with self.database.connection() as conn:
+            conn.execute(
+                "UPDATE sessions SET updated_at = ? WHERE session_key = ?",
+                (old_timestamp, "dashboard-active"),
+            )
+
         created = self.service.add_project_improvement(
             "Mejorar el panel de metricas con filtros por sede.",
             repo_path=str(self.repo_root),
@@ -153,11 +192,13 @@ class ProjectConversationTests(unittest.TestCase):
         )
         listed = self.service.list_project_improvements(repo_path=str(self.repo_root))
         project_ctx = self.database.project_context("dashboard-av")
+        session = self.database.get_record("sessions", 1)
 
         self.assertEqual(created["action"], "stored")
         self.assertEqual(created["improvement"]["priority"], "high")
         self.assertEqual(len(listed["improvements"]), 1)
         self.assertEqual(project_ctx["improvements"][0]["status"], "open")
+        self.assertNotEqual(session["updated_at"], old_timestamp)
 
     def test_project_improvement_status_can_be_closed(self) -> None:
         created = self.service.add_project_improvement(
@@ -243,6 +284,110 @@ class ProjectConversationTests(unittest.TestCase):
 
         self.assertEqual(suggestions[0]["skill_name"], "entrevistador-procesos")
         self.assertEqual(recall["skill_suggestions"][0]["skill_name"], "entrevistador-procesos")
+
+    def test_skill_suggest_prioritizes_core_july_commands_for_memory_work(self) -> None:
+        self.database.upsert_skill_reference(
+            skill_name="presentaciones-visuales",
+            display_name="presentaciones-visuales",
+            description="Crea presentaciones visuales modernas con contexto y mejoras.",
+            trigger_text="presentacion slides deck visual contexto mejoras prueba",
+            domains=["presentaciones", "visual"],
+        )
+        local_commands = [
+            {
+                "type": "local_skill_command",
+                "category": "july_memory_command",
+                "skill_name": "july",
+                "display_name": "july",
+                "description": "Memoria local de proyecto.",
+                "source_path": "skills/july",
+            },
+            {
+                "type": "local_skill_command",
+                "category": "july_memory_command",
+                "skill_name": "july-inicio",
+                "display_name": "july-inicio",
+                "description": "Arranque de contexto y sesiones.",
+                "source_path": "skills/july-inicio",
+            },
+            {
+                "type": "local_skill_command",
+                "category": "july_memory_command",
+                "skill_name": "pendientes",
+                "display_name": "pendientes",
+                "description": "Lista pendientes del proyecto.",
+                "source_path": "skills/pendientes",
+            },
+            {
+                "type": "local_skill_command",
+                "category": "july_memory_command",
+                "skill_name": "mejoras",
+                "display_name": "mejoras",
+                "description": "Lista mejoras del proyecto.",
+                "source_path": "skills/mejoras",
+            },
+        ]
+
+        with patch("july.repositories.skill_repository.discover_local_skill_commands", return_value=local_commands):
+            suggestions = self.database.suggest_skill_references(
+                "poner a prueba July recuperando contexto, mejoras y pendientes",
+                project_key="dashboard-av",
+                limit=5,
+            )
+
+        self.assertEqual([item["skill_name"] for item in suggestions[:3]], ["july", "july-inicio", "pendientes"])
+        self.assertNotIn("presentaciones-visuales", [item["skill_name"] for item in suggestions[:3]])
+
+    def test_skill_suggest_project_kind_boosts_are_stable(self) -> None:
+        self.database.upsert_project(
+            "mobile-app",
+            str(self.repo_root),
+            project_kind="mobile_app",
+            project_tags=["flutter", "supabase"],
+        )
+        self.database.upsert_project(
+            "web-app",
+            str(self.repo_root),
+            project_kind="web_app",
+            project_tags=["browser"],
+        )
+        self.database.upsert_project(
+            "cli-tool",
+            str(self.repo_root),
+            project_kind="cli_tool",
+            project_tags=["python"],
+        )
+        for skill_name, domains in {
+            "skill-release-smoke": ["release-smoke", "flutter"],
+            "supabase": ["supabase"],
+            "browser": ["browser"],
+            "visual-copilot": ["visual-copilot"],
+            "caveman": ["caveman"],
+            "python-helper": ["python"],
+        }.items():
+            self.database.upsert_skill_reference(
+                skill_name=skill_name,
+                display_name=skill_name,
+                description=f"Skill para {skill_name}",
+                domains=domains,
+            )
+
+        snapshots = {
+            "mobile-app": ["skill-release-smoke", "browser", "supabase"],
+            "web-app": ["browser", "visual-copilot"],
+            "cli-tool": ["caveman", "python-helper"],
+        }
+        for project_key, expected_prefix in snapshots.items():
+            with self.subTest(project_key=project_key):
+                suggestions = self.database.suggest_skill_references(
+                    "revisar proyecto actual",
+                    project_key=project_key,
+                    limit=5,
+                )
+                self.assertEqual(
+                    [item["skill_name"] for item in suggestions[:len(expected_prefix)]],
+                    expected_prefix,
+                )
 
     def test_skill_reference_loader_reads_skill_archive(self) -> None:
         skill_path = self.root / "planificador-procesos.skill"

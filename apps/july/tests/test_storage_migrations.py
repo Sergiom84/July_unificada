@@ -39,9 +39,11 @@ class StorageMigrationTests(unittest.TestCase):
             task = database.get_record("tasks", 1)
             with database.connection() as conn:
                 task_columns = {row["name"]: row for row in conn.execute("PRAGMA table_info(tasks)").fetchall()}
+                session_columns = {row["name"] for row in conn.execute("PRAGMA table_info(sessions)").fetchall()}
                 distillation_columns = {
                     row["name"] for row in conn.execute("PRAGMA table_info(project_distillations)").fetchall()
                 }
+                legacy_session = conn.execute("SELECT * FROM sessions WHERE session_key = ?", ("legacy-session",)).fetchone()
 
             self.assertIsNotNone(project)
             self.assertEqual(project["project_kind"], "unknown")
@@ -49,6 +51,8 @@ class StorageMigrationTests(unittest.TestCase):
             self.assertEqual(project["preferences_json"], "{}")
             self.assertEqual(task["title"], "Legacy task")
             self.assertEqual(task_columns["inbox_item_id"]["notnull"], 0)
+            self.assertIn("updated_at", session_columns)
+            self.assertEqual(legacy_session["updated_at"], "2026-05-16T00:00:00+00:00")
             self.assertIn("wiki_pages_changed_json", distillation_columns)
 
 
@@ -97,6 +101,22 @@ def create_legacy_database(db_path: Path) -> None:
                 updated_at TEXT NOT NULL,
                 last_seen_at TEXT NOT NULL
             );
+
+            CREATE TABLE sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_key TEXT NOT NULL UNIQUE,
+                project_key TEXT,
+                agent_name TEXT,
+                goal TEXT,
+                status TEXT NOT NULL DEFAULT 'active',
+                summary TEXT,
+                discoveries TEXT,
+                accomplished TEXT,
+                next_steps TEXT,
+                relevant_files TEXT,
+                started_at TEXT NOT NULL,
+                ended_at TEXT
+            );
             """
         )
         conn.execute(
@@ -142,6 +162,14 @@ def create_legacy_database(db_path: Path) -> None:
                 timestamp,
                 timestamp,
             ),
+        )
+        conn.execute(
+            """
+            INSERT INTO sessions (
+                session_key, project_key, agent_name, goal, status, started_at
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            ("legacy-session", "legacy-project", "codex", "Legacy work", "active", timestamp),
         )
         conn.commit()
     finally:

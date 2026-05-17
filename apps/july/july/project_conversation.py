@@ -26,6 +26,7 @@ from july.project_surface import (
     inspect_repository_surface,
     resolve_project_identity,
 )
+from july.skill_registry import discover_project_playbooks
 
 
 class ProjectConversationService:
@@ -54,13 +55,22 @@ class ProjectConversationService:
         )
         project_ctx = self.database.project_context(resolved_project_key, limit=limit)
         sessions = self.database.session_context(project_key=resolved_project_key, limit=limit)
+        stale_sessions = [session for session in sessions if session.get("is_stale")]
         project_state = assess_project_state(project_ctx, sessions)
         context_summary = build_context_summary(resolved_project_key, project_ctx, sessions, surface)
+        entry_message = build_entry_message(project_state, surface, context_summary)
+        if stale_sessions:
+            first_stale = stale_sessions[0]
+            entry_message = (
+                f"{entry_message} Aviso: hay {len(stale_sessions)} sesion(es) sin cerrar marcadas como stale; "
+                f"la mas reciente es {first_stale['session_key']}. Puedes cerrarla con session-end o abrir una nueva."
+            )
         recall = self.database.proactive_recall(
             build_recall_query(resolved_project_key, context_summary, surface),
             project_key=resolved_project_key,
             limit=3,
         )
+        recall["local_playbooks"] = discover_project_playbooks(repo_root)
 
         # Developer level for adaptive responses
         developer_level = self.database.get_developer_level()
@@ -90,16 +100,28 @@ class ProjectConversationService:
             "repo_root": str(repo_root),
             "project_state": project_state,
             "context_summary": context_summary,
-            "entry_message": build_entry_message(project_state, surface, context_summary),
+            "entry_message": entry_message,
             "permission_request": build_permission_request(project_state, surface),
             "recommended_action": recommended_action_for_state(project_state),
             "options": build_entry_options(project_state),
+            "session_health": {
+                "stale_sessions": stale_sessions,
+                "suggested_actions": [
+                    {
+                        "action": "session-end",
+                        "session_key": session["session_key"],
+                        "label": "Cerrar sesion stale",
+                    }
+                    for session in stale_sessions[:3]
+                ],
+            },
             "surface": {
                 "repo_name": surface.repo_name,
                 "docs": surface.docs,
                 "manifests": surface.manifests,
                 "entrypoints": surface.entrypoints,
                 "stack": surface.stack,
+                "components": [component.public_dict() for component in surface.components],
             },
             "profile": {
                 "project_kind": project["project_kind"],

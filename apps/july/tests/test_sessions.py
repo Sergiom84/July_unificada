@@ -46,6 +46,7 @@ class SessionLifecycleTests(unittest.TestCase):
         self.assertEqual(row["status"], "summarized")
         self.assertEqual(row["summary"], "Resumen de prueba")
         self.assertIsNone(row["ended_at"])
+        self.assertIsNotNone(row["updated_at"])
 
     def test_session_end_after_summary_marks_session_closed(self) -> None:
         self.database.session_start("ses-close")
@@ -68,6 +69,41 @@ class SessionLifecycleTests(unittest.TestCase):
         self.assertEqual(result["status"], "closed_without_summary")
         self.assertEqual(row["status"], "closed_without_summary")
         self.assertIsNotNone(row["ended_at"])
+
+    def test_old_active_session_is_marked_stale_without_closing(self) -> None:
+        self.database.session_start("ses-stale", project_key="dashboard-av")
+        old_timestamp = "2026-01-01T00:00:00+00:00"
+        with self.database.connection() as conn:
+            conn.execute(
+                "UPDATE sessions SET started_at = ?, updated_at = ? WHERE session_key = ?",
+                (old_timestamp, old_timestamp, "ses-stale"),
+            )
+
+        sessions = self.database.session_context(project_key="dashboard-av")
+        row = self.database.get_record("sessions", 1)
+
+        self.assertEqual(sessions[0]["status"], "stale")
+        self.assertTrue(sessions[0]["is_stale"])
+        self.assertEqual(sessions[0]["stale_after_hours"], 48)
+        self.assertEqual(row["status"], "stale")
+        self.assertIsNone(row["ended_at"])
+        self.assertEqual(row["updated_at"], old_timestamp)
+
+    def test_touch_project_session_revives_stale_session(self) -> None:
+        self.database.session_start("ses-touch", project_key="dashboard-av")
+        old_timestamp = "2026-01-01T00:00:00+00:00"
+        with self.database.connection() as conn:
+            conn.execute(
+                "UPDATE sessions SET status = 'stale', updated_at = ? WHERE session_key = ?",
+                (old_timestamp, "ses-touch"),
+            )
+
+        touched = self.database.touch_project_session("dashboard-av")
+        row = self.database.get_record("sessions", 1)
+
+        self.assertIsNotNone(touched)
+        self.assertEqual(row["status"], "active")
+        self.assertNotEqual(row["updated_at"], old_timestamp)
 
 
 if __name__ == "__main__":

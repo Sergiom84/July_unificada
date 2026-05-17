@@ -133,6 +133,7 @@ class ProjectMemoryActions:
             source_channel=source,
             source_ref=str(repo_root),
         )
+        self.database.touch_project_session(resolved_project_key)
         return {
             "project_key": resolved_project_key,
             "action": "stored",
@@ -185,6 +186,7 @@ class ProjectMemoryActions:
             status,
             project_key=resolved_project_key,
         )
+        self.database.touch_project_session(resolved_project_key)
         return {
             "project_key": resolved_project_key,
             "improvement": improvement,
@@ -218,6 +220,7 @@ class ProjectMemoryActions:
             details=text,
             status="pending",
         )
+        self.database.touch_project_session(resolved_project_key)
         return {
             "project_key": resolved_project_key,
             "action": "stored",
@@ -271,6 +274,7 @@ class ProjectMemoryActions:
             status,
             project_key=resolved_project_key,
         )
+        self.database.touch_project_session(resolved_project_key)
         return {
             "project_key": resolved_project_key,
             "pending": pending,
@@ -305,6 +309,7 @@ class ProjectMemoryActions:
             "status": "ready",
         }
         result = self.database.capture(text, source, project_key, plan)
+        self.database.touch_project_session(project_key)
         topic_link = self.maybe_link_topic(text, result["memory_item_id"])
         result["topic_link"] = topic_link
         return result
@@ -319,4 +324,3 @@ class ProjectMemoryActions:
                 self.database.create_topic(topic_key, topic_key.split("/")[-1].replace("-", " ").title(), "Programacion")
                 return self.database.link_to_topic(topic_key, memory_item_id=memory_item_id)
         return None
-

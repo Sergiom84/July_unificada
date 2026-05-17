@@ -136,6 +136,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     next_steps TEXT,
     relevant_files TEXT,
     started_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
     ended_at TEXT
 );
 

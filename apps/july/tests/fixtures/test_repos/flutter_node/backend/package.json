@@ -1,0 +1,10 @@
+{
+  "name": "indalo-backend-fixture",
+  "scripts": {
+    "dev": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.18.0"
+  }
+}

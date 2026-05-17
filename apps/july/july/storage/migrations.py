@@ -8,6 +8,7 @@ def run_migrations(conn: sqlite3.Connection) -> None:
     migrate_projects_profile_columns(conn)
     migrate_nullable_task_inbox_item(conn)
     migrate_project_distillations(conn)
+    migrate_sessions_updated_at(conn)
 
 
 def migrate_projects_profile_columns(conn: sqlite3.Connection) -> None:
@@ -74,6 +75,20 @@ def migrate_project_distillations(conn: sqlite3.Connection) -> None:
 
         CREATE INDEX IF NOT EXISTS idx_project_distillations_project_session
         ON project_distillations(project_key, to_session_id, distilled_at);
+        """
+    )
+
+
+def migrate_sessions_updated_at(conn: sqlite3.Connection) -> None:
+    session_column_names = table_column_names(conn, "sessions")
+    if not session_column_names or "updated_at" in session_column_names:
+        return
+    conn.execute("ALTER TABLE sessions ADD COLUMN updated_at TEXT")
+    conn.execute(
+        """
+        UPDATE sessions
+        SET updated_at = COALESCE(started_at, ended_at, datetime('now'))
+        WHERE updated_at IS NULL OR TRIM(updated_at) = ''
         """
     )
 

@@ -84,6 +84,32 @@ def discover_local_skill_commands(skills_root: str | Path | None = None, limit: 
     return commands
 
 
+def discover_project_playbooks(repo_root: str | Path, limit: int = 20) -> list[dict[str, str | bool]]:
+    root = Path(repo_root).expanduser() / "docs" / "skills"
+    if not root.exists():
+        return []
+
+    playbooks: list[dict[str, str | bool]] = []
+    for path in sorted(root.glob("*.md")):
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        name = path.stem
+        playbooks.append({
+            "type": "project_playbook",
+            "scope": "local",
+            "project_scoped": True,
+            "name": name,
+            "display_name": extract_markdown_title(text) or name,
+            "description": first_non_empty_line(text) or "Playbook local del proyecto.",
+            "source_path": str(path),
+        })
+        if len(playbooks) >= limit:
+            break
+    return playbooks
+
+
 def build_trigger_text(description: str, body: str) -> str:
     text = f"{description}\n\n{body}".strip()
     return re.sub(r"\s+", " ", text)[:8000]
@@ -94,6 +120,14 @@ def first_non_empty_line(text: str) -> str:
         stripped = line.strip()
         if stripped and not stripped.startswith("#"):
             return stripped
+    return ""
+
+
+def extract_markdown_title(text: str) -> str:
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            return stripped.strip("# ").strip()
     return ""
 
 
